@@ -46,10 +46,8 @@ To use type in terminal: dpkg-reconfigure cryptsetup-nuke-password
 Now make up a password and make sure it's different then your usual one
 
 
-This will Erase the LUKS keys with a special password (that you make up) at the default unlock prompt if you fear seizure of your data this way the data can never be decrypted 
+This will Erase Your LUKS key (encryption key)when a certain special password is entered (that you make up) at the default unlock prompt if you fear seizure of your data this way the data can never be decrypted 
 
-
-Don't test it out :) 
 
 #If /usr is mounted ro "read only" then package manager can't install ~ update software unless you remove ro and reboot or add the following to the apt.conf:
 
@@ -66,9 +64,8 @@ Post-Invoke { "mount /usr -o remount,ro" };
 };
 
 #little quirky best do as mentioned above manually: sudo mount -o remount,ro,noatime,nodev /usr
--------------------------------------------------------------------------------------------------------------------------
-## Partition Mount Example:
-
+---------------------------------------------------------------------------------------------------------------------------------
+## Partition Mount Example:   https://obscurix.github.io/security/mount-options.html
 
 sudoedit /etc/fstab
 
@@ -88,13 +85,13 @@ UUID=AB9C-A988  /boot/efi       vfat    umask=0077      0       1
 /dev/mapper/tuta--vg-vartmp /var/tmp        ext4    rw,noatime,nodev,nosuid,noexec	0       2
 /dev/mapper/tuta--vg-swap_1 none            swap    sw              0       0
 
-udev /dev devtmpfs rw,nosuid,noexec,noatime 0 0
-devpts /dev/pts devpts rw,newinstance,ptmxmode=0666 0 0
-tmpfs /dev/shm tmpfs rw,nodev,nosuid,noexec 0 0
-tmpfs /home/stv/.cache tmpfs rw,size=400M,noexec,noatime,nodev,uid=stv,gid=stv,mode=700 0 0
+udev /dev devtmpfs rw,nosuid,noexec,noatime 0 00                                       
+devpts /dev/pts devpts rw,newinstance,ptmxmode=0666 0 0                                       
+tmpfs /dev/shm tmpfs rw,nodev,nosuid,noexec 0 0                                        
+tmpfs /home/userName/.cache tmpfs rw,size=400M,noexec,noatime,nodev,uid=userName,gid=userGroup,mode=700 0 0
 
-#End
-------------------------------------------------------------------------------------------------------------------------
+#End              https://book.hashbang.sh/docs/security/linux_hardening/
+----------------------------------------------------------------------------------------------------------------------------------
 ## Adding users and or groups (New)
 
 sudo useradd john_doe -m -s /bin/bash -g sudo -G adm,systemd-journal -c 'Johnny Does'
@@ -119,18 +116,18 @@ sudo adduser "$USER" sudo
 
 sudo usermod johnDoe -G sudo -a   <------------For existing user
 
-sudo useradd johnDoe -G sudo   <----------At creation time
+sudo useradd johnDoe -g sudo   <----------At creation time
 
 
-sudo find / -group johnDoe -exec chgrp newGroup {} \;   (if user changes group then find all their files and rename to the new group)
+sudo find / -group johnDoe -exec chgrp newGroup {} \;   (if user changes group then locate all their files from old group and set to the new group)
 
 ## You have normal account w/o sudo and would like to upgrade type in terminal:
 
 su 
 
-sudo usermod -a -G sudo,adm yourUserName  <=========adds you to sudo group & admin
+sudo usermod -a -G sudo,adm yourUserName  <-------adds you to sudo group & admin
 
-sudo usermod -a -g adm yourUserName   <========adds you to admin group
+sudo usermod -a -g adm yourUserName   <------adds you to admin group
 
 # add yourself to sudoers file type:  sudo visudo 
 
@@ -142,8 +139,8 @@ sudo usermod -a -g adm yourUserName   <========adds you to admin group
 Example:
 
 root            ALL=(ALL:ALL) ALL
-yourUserName    ALL=(ALL:ALL) ALL    <===================== like this 
-----------------------------------------------------------------------------------------------------------------------------
+yourUserName    ALL=(ALL:ALL) ALL    <------------- like this 
+----------------------------------------------------------------------------------------------------------------------------------
 ## install firewall then add rules last activate:
 
 sudo apt install ufw 
@@ -181,7 +178,9 @@ or : sudo ufw status numbered
 
 to delete sudo ufw delete (numberGoesHere)
 
--------------------------------------------------------------------------------------------------------------------------
+Of course some will need inbound rules perhaps ssh: sudo ufw allow in 22/tcp or for a server: sudo ufw allow in 443/tcp
+sudo ufw allow in 80/tcp
+----------------------------------------------------------------------------------------------------------------------------------
 ## install a https dns proxy 
 
 sudo apt install dnss 
@@ -200,7 +199,7 @@ can also be typed : sudo echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
 
 (I like 2nd way :) ) 
 
--------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------
 ## set timesyncd to use cloudflare & apple 
 
 echo "NTP=time.cloudflare.com" | sudo tee -a /etc/systemd/timesyncd.conf
@@ -209,7 +208,7 @@ echo "FallbackNTP=time.apple.com" | sudo tee -a /etc/systemd/timesyncd.conf
 
 
 or install "ntpsec" package
---------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------
 ## Deny all in /etc/hosts.deny
 
 sudoedit /etc/hosts.deny 
@@ -217,8 +216,8 @@ sudoedit /etc/hosts.deny
 #At bottom remove # beside ALL:PARANOID 
 
 #then save and close 
---------------------------------------------------------------------------------------------------------------------
-## See what programs are listening waiting for a connection;
+----------------------------------------------------------------------------------------------------------------------------------
+## See what programs are listening waiting for a connection:
 
 netstat -tanp | grep LISTEN
 
@@ -281,7 +280,7 @@ sudo systemctl disable unattended-upgrades
 
 sudo apt purge popularity-contest* whoopsie*
 
--------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------
 ## Install firejail and apparmor   https://pvera.net/posts/apparmor-firejail-sandboxing/
 
 sudo apt update
@@ -324,7 +323,7 @@ sudo nano /etc/default/grub     "splash apparmor=1 lockdown=confidentiality lsm=
 sudo aa-status
 
 ps auxZ | grep -v '^unconfined'
---------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------
 ## logs:
 
 sudo cat /var/log/kern.log | grep DENIED
@@ -338,13 +337,13 @@ logwatch –mailto [email protected] –range All
 
 sudo find /var/log/ -type f \( -name “*.log” \) -exec tail -f “$file” {} + | more
 
---------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------
 ## secure X11
 
 sudoedit /etc/X11/Xwrapper.config  
 
 then add this:  needs_root_rights = no
---------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------
 ## Tmp mount in  RAM:
 
 sudo cp -v /usr/share/systemd/tmp.mount /etc/systemd/system/
@@ -354,7 +353,7 @@ sudo systemctl enable tmp.mount
 #reboot 
 
 systemctl status tmp.mount
---------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------
 ## Secure /tmp and /var/tmp (above is easiest-quickest unless you prefer creating a new /tmp)
 
 Temporary storage directories such as /tmp, /var/tmp and /dev/shm allow a hacker to have a place to do naughty things :)
@@ -403,48 +402,39 @@ sudo cp -prf /var/tmpold/* /tmp/
 sudo rm -rf /var/tmpold/
 
 Then reboot
- 
-
---------------------------------------------------------------------------------------------------------------------
-## Secure X11 or use Wayland:
-
-sudoedit /etc/X11/Xwrapper.config
-
-and paste this: 
-
-needs_root_rights = no
- 
---------------------------------------------------------------------------------------------------------------------
-## Secure Shared Memory
+----------------------------------------------------------------------------------------------------------------------------------
+## Secure Shared Memory (same as shown above in Example Partition mount options)
 
 sudoedit /etc/fstab
 
 tmpfs     /dev/shm     tmpfs	defaults,noexec,nosuid	0	0
 
 tmpfs     /run/shm    tmpfs	defaults,noexec,nosuid	0	0
-
---------------------------------------------------------------------------------------------------------------------
-
+----------------------------------------------------------------------------------------------------------------------------------
 This command will allow you to find which files and folders that can be secured:
 
 sudo find / -perm -2 ! -type l -ls
-
-
---------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------
 ## Disable IRQ Balance, edit /etc/default/irqbalance:
 
 sudo vi /etc/default/irqbalance
 And Change the ENABLED value to 0:
 
 ENABLED=0
-
---------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------
 ## Improve performance
-Swappiness in the file should be set to 0 or 1 Skipping this step may cause both poor performance, whereas setting it to 0 will cause swap to act as an emergency buffer, preventing out-of-memory crashes. You can do this with the following commands:
+#Swappiness in the file should be set to 0 or 1 Skipping this step may cause both poor performance, whereas setting it to 0 will cause swap to act as an emergency buffer, preventing out-of-memory crashes. You can do this with the following commands:
 
-echo 0 | sudo tee /proc/sys/vm/swappiness
-echo vm.swappiness = 0 | sudo tee -a /etc/sysctl.conf
---------------------------------------------------------------------------------------------------------------------
+sudo echo 1 | sudo tee /proc/sys/vm/swappiness  <---temporary
+
+sudo echo 'vm.swappiness=1 >> /etc/sysctl.conf'     <-------permanent 
+
+#also if you have pleny of Ram > 12GB:
+
+# Improve cache management
+sudo echo 'vm.vfs_cache_pressure=50' >> /etc/systemctl.conf
+
+---------------------------------------------------------------------------------------------------------------------------------
 ## Secure SWAP
 To prevent the file from being world-readable, you should set up the correct permissions on the swap file:
 
@@ -452,41 +442,14 @@ sudo chown root:root /swapfile
 sudo chmod 0600 /swapfile
 
 Reboot
---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 noexec – Prevents execution of binaries on mounted file systems. This prevents remote users from executing unwanted binaries on your system.
 
 nosuid – Disables set-user-identifier or set-group-identifier bits. This prevents remote users from gaining higher privileges by running a setuid program.
 
 nodev – Prevents character and block special devices from being defined, or if they exist, from being used as character and block special devices. This prevents remote users from getting out of chrooted server jails.
---------------------------------------------------------------------------------------------------------------------
-## Disable login of few accounts that do not need to have login:
-
-sudo touch nologin.sh
-
-sudo nano nologin.sh
-
-#copy & paste below text then close save
-
-
-!/bin/bash 
-for user in `awk -F: '($3 < 500) {print $1 }' /etc/passwd`; do
-if [ $user != "root" ] 
-then 
-/usr/sbin/usermod -L $user 
-if [ $user != "sync" ] && [ $user != "shutdown" ] && [ $user != "halt" ] 
-then /usr/sbin/usermod -s /sbin/nologin $user 
-fi 
-fi 
-done
-
-#make executable: sudo chmod +x nologin.sh
-
-#to run just type:
-
-sudo ./nologin.sh
---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 ## Block all wireless devices (bluetooth wifi) with Rfkill at boot ~
-
 
 sudo touch /opt/rfkill.sh && sudoedit /opt/rfkill.sh
 
@@ -527,14 +490,13 @@ Type=oneshot
 
 WantedBy=multi-user.target
 
-
 Close it with Ctrl+x Press Y then Press Enter then type:
 
 sudo systemctl enable rfkill
 
 That’s all! Just reboot and check it ran by typing into Terminal: systemctl status rfkill 
---------------------------------------------------------------------------------------------------------------------
-## Change mac address at every boot service 
+---------------------------------------------------------------------------------------------------------------------------------
+## Change mac address at every boot service  https://theprivacyguide1.github.io/linux_hardening_guide#mac_address
 
 sudo apt install macchanger 
 
@@ -566,11 +528,15 @@ WantedBy=multi-user.target
 Replace eth0 with your network interface. You can find the mac address with "ip a" command 
 
 Macchanger prompts upon install to automatically change Mac (select No) but it's only when you disable and enable network and not at boot so, this way is more convinient 
---------------------------------------------------------------------------------------------------------------------
-## sudoedit /etc/default/grub :
+---------------------------------------------------------------------------------------------------------------------------------
+## Kernel settings placed in grub to execute: https://theprivacyguide1.github.io/linux_hardening_guide#boot_parameters
+
+https://vez.mrsk.me/linux-hardening.html
+
+sudoedit /etc/default/grub
 
 GRUB_CMDLINE_LINUX_DEFAULT="splash apparmor=1 lockdown=confidentiality lsm=lockdown,yama,apparmor modules.sig_enforce=1 slub_debug=F page_alloc.shuffle=1 init_on_alloc=1 init_on_free=1 slab_nomerge audit=1 amd_iommu=on iommu=pt"
---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 ## Set Kernel and Network settings using Sysctl audit with lynis or yasat if yasat: sudo yasat -p network.test and if using lynis: sudo lynis audit system
 
 ## sudoedit /etc/sysctl.conf :
@@ -590,17 +556,17 @@ vm.unprivileged_userfaultfd=0
 vm.mmap_rnd_bits=32
 vm.mmap_rnd_compat_bits=16
 
-kernel.perf_event_paranoid = 3
 kernel.sysrq=0
+kernel.perf_event_paranoid = 3
 kernel.unprivileged_userns_clone=1
 kernel.randomize_va_space=2
 kernel.dmesg_restrict=1
 kernel.kptr_restrict=2
 kernel.unprivileged_bpf_disabled=1
-net.core.bpf_jit_harden=2
 kernel.yama.ptrace_scope=2
 kernel.kexec_load_disabled=1
 
+net.core.bpf_jit_harden=2
 net.ipv4.tcp_syncookies=1
 net.ipv4.tcp_synack_retries = 2
 net.ipv4.tcp_syn_retries = 5
@@ -641,7 +607,7 @@ sudo echo 'settingGoesHere' >> /etc/sysctl.conf
 #Apply new settings:
 
 sudo sysctl -p  (or reboot)
---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 ## Set users allowed to login to console locally 
 
 sudoedit /etc/security/access.conf
@@ -653,18 +619,18 @@ sudoedit /etc/security/access.conf
 -:ALL:ALL
 
 #save and close 
---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 ## Prevent standard users execute su:
 
 dpkg-statoverride --update --add root adm 4750 /bin/su
 
---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 ## Set new users to nologin
 
 sudo sed -ie '/^SHELL=/ s/=.*\+/=\/usr\/sbin\/nologin/' /etc/default/useradd
 sudo sed -ie '/^DSHELL=/ s/=.*\+/=\/usr\/sbin\/nologin/' /etc/adduser.conf
 
---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 # view home permissions 
 
 ls -ld /home/USER 
@@ -677,10 +643,8 @@ chmod o-rwx /home/yourUserName  <-------------removes other read write and execu
 
 #Remove Others and Groups write permissions from your home folder:
 
-sudo chmod -R 750 /home/yourUserName  <-------same as above just shorter easier to use 
-
-umask 077 or 027
---------------------------------------------------------------------------------------------------------------------
+sudo chmod 750 /home/yourUserName  <-------same as above just shorter easier to use 
+---------------------------------------------------------------------------------------------------------------------------------
 # Restrict the permission on all system crontab directories:  (use Yasat plugin for audit if you like: sudo yasat -p system_rights.test)
 
 cd /etc
@@ -731,7 +695,7 @@ sudo chmod -R go-rxw /boot
 sudo chmod -R o-rxw /home/userName
 
 
---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 ## block ceratin modules unwanted networking protocols and file types from being installed and or used 
 
 sudo touch /etc/modprobe.d/blacklist.conf
@@ -788,7 +752,7 @@ install usb-storage /bin/true
 
 Save and close 
 
---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 ## Install a more secure DNS that uses HTTPS proxy (can choose between Google or Cloudflare)
 
 sudo apt install dnss
@@ -803,8 +767,7 @@ sudo dnss -enable_dns_to_https -https_upstream="https://1.1.1.1/dns-query"
 sudo dnss -enable_dns_to_https -https_upstream="https://dns.google/dns-query"
 
 That's it :)
-
---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 ## Next add some software security and what not pick and choose ...
 
 sudo apt update && sudo apt install logwatch auditd rkhunter chkrootkit yasat lynis stacer gnome-logs fcheck rsyslog
@@ -818,7 +781,9 @@ sudo yasat -p pluginNameGoesHere
 That's it let it complete and look over see what it found ...
 
 
-#Lynis also a auditing program 
+#Lynis also a auditing program (good idea to download from their website so you have the latest version) 
+
+https://cisofy.com/downloads/lynis/
 
 sudo lynis audit system
 
@@ -828,7 +793,7 @@ sudo lynis audit system
 
 to use just type : sudo fcheck -ac <======builds the database 
 
-can also do : sudo fcheck -acsirx <------builds database with improved options for Linux
+can also do : sudo fcheck -acsirx <------builds database with improved options for Linux; use this one :)
 
 builds db plus hashes files so that any modifications will be detected and the -r is report mode also worth using :)and the x provides extended checks such as permissions and links- once database completes it's done in the future to see what has changed just type the samething without the -c in it so it'd be : 
 
@@ -916,8 +881,9 @@ Set some defaults
 ● Monitor important syscalls
 ● -a exit,always -S open -S openat -F exit=-EPERM
 
---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 ## Method 1 Change umask settings (file creation permissions) to a more secure setting system wide:
+https://linuxaria.com/article/linux-shell-understanding-umask-with-examples
 
 #In these two files: 
 
@@ -929,8 +895,6 @@ add this:  session optional pam_umask.so umask=0027
 save exit reboot 
 
 now umask should say 0027 which is same as 750
-
-some like 0077 but it's bit strict for me anyway that would be permission of 700 rwx read write and execute for the user only and that maybe okay in your /home directory but everywhere possible issues...
 
 
 ## Method 2
@@ -946,7 +910,23 @@ add:  umask 0027
 
 close & save 
 
---------------------------------------------------------------------------------------------------------------------
+
+## Method 4
+
+sudo touch /etc/profile.d/umask.sh
+
+sudoedit /etc/profile.d/umask.sh
+
+sudo chmod +x /etc/profile.d/umask.sh
+
+copy/paste below:
+
+# Set a more restrictive umask
+# This makes newly created files only readable by the owner
+umask 0077                                                 
+
+https://obscurix.github.io/security/other-security-features.html
+---------------------------------------------------------------------------------------------------------------------------------
 ## set a root password and then lock root account if you like but if things go wrong and you need to login as root :(
 
 sudo passwd root
@@ -958,8 +938,9 @@ then lock root account if you like:
 sudo passwd root -l 
 
 to unlock: sudo passwd -u
--------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 ## Set trim to run daily instead of weekly that is default 
+https://easylinuxtipsproject.blogspot.com/p/ssd.html#ID6
 
 #create a folder: 
 sudo mkdir -v /etc/systemd/system/fstrim.timer.d
@@ -981,8 +962,7 @@ OnCalendar=daily
 
 journalctl | grep fstrim.service
 
---------------------------------------------------------------------------------------------------------------------
-
+---------------------------------------------------------------------------------------------------------------------------------
 ## At and Cron (use Yasat plugin for audit)
 Only allow root and people with verified need to run cron jobs
 Setup cron.allow and cron.deny
@@ -1016,8 +996,7 @@ protection
 #Audit with yasat: sudo yasat -p postfix.test
 
 ##NTP Network Time Protocol audit with yasat: sudo yasat -p ntp.test
---------------------------------------------------------------------------------------------------------------------
-
+---------------------------------------------------------------------------------------------------------------------------------
 pam_tally2
 ● This is used to lockout an account for consecutive failed login
 attempts
@@ -1048,8 +1027,7 @@ Limit access to su command
 auth required pam_wheel.so use_uid
 
 dpkg-statoverride --update --add root adm 4750 /bin/su
-
---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 Compile Kernel steps:
 
 # cd /usr/src/linux
@@ -1078,8 +1056,8 @@ sudo hmod 755 /usr/bin/cc
 sudo hmod 755 /usr/bin/gcc
 sudo hmod 755 /usr/bin/*c++
 sudo hmod 755 /usr/bin/*g++
---------------------------------------------------------------------------------------------------------------------
-## Top <3<3<3
+---------------------------------------------------------------------------------------------------------------------------------
+## Top
 
 • u [user name] To display only the processes belonging to the user. Use + or blank to see
 all users
@@ -1090,9 +1068,8 @@ all users
 SHIFT + M  sets memory + C will take you back to default CPU
 
 F lets you adjust the fields 
---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
 ## Browser Tips 
-
 
 if you added firejail sandbox and then ran in terminal: sudo firecfg   then skip the following
 
@@ -1122,8 +1099,66 @@ enable: Throttle non-visible cross-origin iframes
 enable: CSP policy for Web Payment API
 
 There are many more options may have to tinker around until you get it how you like it :) 
-----------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
+## Computer has > 4 GB RAM speed things up with zram ~ https://easylinuxtipsproject.blogspot.com/p/speed-mint.html#ID1.2
 
+sudoedit /etc/default/grub
+
+#add: zswap.enabled=1 zswap.zpool=z3fold zswap.compressor=lz4   as shown below in Example:
+
+#Example: 
+
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash zswap.enabled=1 zswap.zpool=z3fold zswap.compressor=lz4"
+
+
+#Save the modified file and close: Ctrl X then press Y and last press Enter 
+
+#Copy/paste then press Enter and update your new changes
+
+sudo update-grub
+
+#Copy/paste the following command line into the terminal:
+
+sudoedit /etc/initramfs-tools/modules
+
+Press Enter
+
+At the bottom of the text of that file add: z3fold    so it looks like the below:
+
+# List of modules that you want to include in your initramfs.
+# They will be loaded at boot time in the order below.
+#
+# Syntax: module_name [args ...]
+#
+# You must run update-initramfs(8) to effect this change.
+#
+# Examples:
+#
+# raid1
+# sd_mod
+z3fold
+
+#Save the changes(Ctrl X) press Y and lastly press Enter
+
+#Copy/Paste below command then press Enter:
+
+sudo update-initramfs -u
+
+
+Reboot 
+
+#See if it's working: 
+
+dmesg | grep zswap
+
+#It should report in its final line: zswap: loaded using pool lz4/z3fold.
+
+#Percentage of your RAM that zswap uses, can be checked with the following command:
+
+cat /sys/module/zswap/parameters/max_pool_percent
+
+#It should report 20, which is the default, or 40 at the most.
+---------------------------------------------------------------------------------------------------------------------------------
 
 
 
