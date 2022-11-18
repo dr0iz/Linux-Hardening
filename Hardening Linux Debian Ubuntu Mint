@@ -654,6 +654,10 @@ sudo chown root:root cron.hourly cron.daily cron.weekly cron.monthly cron.d shad
 sudo chmod -R go-rwx cron.hourly cron.daily cron.weekly cron.monthly cron.d
 
 
+The execute bit "x" does not mean to execute; it means to search. The read "r" permission for a directory allows
+the filenames in the directory to be read, but the files themselves cannot be accessed without directory search "x" permission 
+
+
 
 sudo chown root:root /var/spool/cron
 sudo chown root:root /etc/default/grub
