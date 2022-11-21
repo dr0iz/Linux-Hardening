@@ -1194,7 +1194,7 @@ jitterentropy_rng
 
 Now reboot and they'll begin working away creating randomness
 --------------------------------------------------------------------------------------------------------------------------------------------
-## Kick any idle users off (besides you of course) just for the sake of security in general after 5 minutes:
+## Kick any idle users off just for the sake of security in general after 10 minutes:
 
 sudo touch /etc/profile.d/os-security.sh
 
@@ -1202,14 +1202,15 @@ sudo nano /etc/profile.d/os-security.sh
 
 copy/paste below into file then close and save:
 
-readonly TMOUT=300
+readonly TMOUT=600
 readonly HISTFILE
 
 Last make executable:
 
 sudo chmod +x /etc/profile.d/os-security.sh
 
-That's it it'll start working after a reboot  https://wiki.centos.org/HowTos/OS_Protection
+
+https://wiki.centos.org/HowTos/OS_Protection
 --------------------------------------------------------------------------------------------------------------------------------------------
 ## Lockdown Cron and At ~ so that only root and trusted users may be able to use and no others-this script will do this by creating a cron.allow & cron.deny file inside /etc directory ~
 
