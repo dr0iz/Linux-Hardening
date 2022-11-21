@@ -528,15 +528,17 @@ WantedBy=multi-user.target
 Replace eth0 with your network interface. You can find the mac address with "ip a" command 
 
 Macchanger prompts upon install to automatically change Mac (select No) but it's only when you disable and enable network and not at boot so, this way is more convinient 
----------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------
 ## Kernel settings placed in grub to execute: https://theprivacyguide1.github.io/linux_hardening_guide#boot_parameters
+
+*note: substitue amd_iommu=on for Intel cpu add: intel_iommu=on
 
 https://vez.mrsk.me/linux-hardening.html
 
 sudoedit /etc/default/grub
 
 GRUB_CMDLINE_LINUX_DEFAULT="splash apparmor=1 lockdown=confidentiality lsm=lockdown,yama,apparmor modules.sig_enforce=1 slub_debug=F page_alloc.shuffle=1 init_on_alloc=1 init_on_free=1 slab_nomerge audit=1 amd_iommu=on iommu=pt"
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 ## Set Kernel and Network settings using Sysctl audit with lynis or yasat if yasat: sudo yasat -p network.test and if using lynis: sudo lynis audit system
 
 ## sudoedit /etc/sysctl.conf :
@@ -607,30 +609,30 @@ sudo echo 'settingGoesHere' >> /etc/sysctl.conf
 #Apply new settings:
 
 sudo sysctl -p  (or reboot)
----------------------------------------------------------------------------------------------------------------------------------
-## Set users allowed to login to console locally 
+--------------------------------------------------------------------------------------------------------------------------------------------
+## Only allow root to log in locally and add yourself (username) along with any other users ...
+
+*note if you have more than one user just put a space after yourUserName and simply add the others the same way with their user name
 
 sudoedit /etc/security/access.conf
 
 #at bottom add:
 
-+:YourUserName:LOCAL
-+:YourGroup:LOCAL       <------optional 
--:ALL:ALL
+-:ALL EXCEPT root:tty1 yourUserName
 
 #save and close 
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 ## Prevent standard users execute su:
 
 dpkg-statoverride --update --add root adm 4750 /bin/su
 
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 ## Set new users to nologin
 
 sudo sed -ie '/^SHELL=/ s/=.*\+/=\/usr\/sbin\/nologin/' /etc/default/useradd
 sudo sed -ie '/^DSHELL=/ s/=.*\+/=\/usr\/sbin\/nologin/' /etc/adduser.conf
 
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 # view home permissions 
 
 ls -ld /home/USER 
@@ -644,7 +646,7 @@ chmod o-rwx /home/yourUserName  <-------------removes other read write and execu
 #Remove Others and Groups write permissions from your home folder:
 
 sudo chmod 750 /home/yourUserName  <-------same as above just shorter easier to use 
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 # Restrict the permission on all system crontab directories:  (use Yasat plugin for audit if you like: sudo yasat -p system_rights.test)
 
 cd /etc
@@ -672,7 +674,7 @@ sudo chmod -R o-rxw /etc/snmp
 sudo chmod -R o-rxw /etc/apache2
 sudo chmod -R o-rxw /etc/postfix
 
-sudo chmod 644 /etc/passwd      <--------if not can be locked out LightDM Greeter ... keep at 644 no less 
+sudo chmod 644 /etc/passwd      <--------if not can be locked out LightDM Greeter (or other greeters) ... keep at 644 no less 
 sudo chmod 644 /etc/group
 
 
@@ -694,12 +696,12 @@ sudo chmod 600 /etc/shadow
 sudo chmod 400 /etc/gshadow
 
 
-sudo chmod -R go-rxw /boot
+sudo chmod o-rxw /boot
 
-sudo chmod -R o-rxw /home/userName
+sudo chmod o-rxw /home/userName
 
-
----------------------------------------------------------------------------------------------------------------------------------
+sudo chmod 700 /root /boot /usr/lib/modules
+--------------------------------------------------------------------------------------------------------------------------------------------
 ## block ceratin modules unwanted networking protocols and file types from being installed and or used 
 
 sudo touch /etc/modprobe.d/blacklist.conf
@@ -755,8 +757,7 @@ install ipv6 /bin/true
 install usb-storage /bin/true
 
 Save and close 
-
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 ## Install a more secure DNS that uses HTTPS proxy (can choose between Google or Cloudflare)
 
 sudo apt install dnss
@@ -771,7 +772,7 @@ sudo dnss -enable_dns_to_https -https_upstream="https://1.1.1.1/dns-query"
 sudo dnss -enable_dns_to_https -https_upstream="https://dns.google/dns-query"
 
 That's it :)
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 ## Next add some software security and what not pick and choose ...
 
 sudo apt update && sudo apt install logwatch auditd rkhunter chkrootkit yasat lynis stacer gnome-logs fcheck rsyslog
@@ -793,7 +794,9 @@ sudo lynis audit system
 
 
 
-#fcheck is used for integrity like aide or tiger it can be used as a IDS detect modifications to your files and folders 
+#fcheck is used for integrity like aide or tiger it can be used as a IDS detect modifications (new links added or removed-permissons altered -added deleted files and or directories added or removed) to your files and folders ~
+
+*note some users like to add a file named like MyPasswords or something to entice a intruder into viewing or deleting :) then adding to the files to be watched be sure and go to the config file of fcheck (etc/fcheck) and either add or remove watched files and or directories...
 
 to use just type : sudo fcheck -ac <======builds the database 
 
@@ -885,7 +888,7 @@ Set some defaults
 ● Monitor important syscalls
 ● -a exit,always -S open -S openat -F exit=-EPERM
 
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 ## Method 1 Change umask settings (file creation permissions) to a more secure setting system wide:
 https://linuxaria.com/article/linux-shell-understanding-umask-with-examples
 
@@ -906,7 +909,7 @@ now umask should say 0027 which is same as 750
  sudo sed -ie '/^UMASK\s\+/ s/022/077/' /etc/login.defs
 
 
-#Method 3
+# Method 3
 
 sudoedit bash.bashrc
 
@@ -915,7 +918,7 @@ add:  umask 0027
 close & save 
 
 
-## Method 4
+# Method 4
 
 sudo touch /etc/profile.d/umask.sh
 
@@ -930,7 +933,15 @@ copy/paste below:
 umask 0077                                                 
 
 https://obscurix.github.io/security/other-security-features.html
----------------------------------------------------------------------------------------------------------------------------------
+
+# Method 5
+
+perl -npe 's/umask\s+0\d2/umask 077/g' -i /etc/bashrc
+
+regardless which used always check after reboot to see if it's sticking by issuing: umask    command in terminal
+
+*note be cautious and test if using 0077 (equivilant to 700) mask especially if you frequently share files may need to use 0027 (equivilant to 750) instead of 0077 if you start having issues
+-------------------------------------------------------------------------------------------------------------------------------------------
 ## set a root password and then lock root account if you like but if things go wrong and you need to login as root :(
 
 sudo passwd root
@@ -942,7 +953,7 @@ then lock root account if you like:
 sudo passwd root -l 
 
 to unlock: sudo passwd -u
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 ## Set trim to run daily instead of weekly that is default 
 https://easylinuxtipsproject.blogspot.com/p/ssd.html#ID6
 
@@ -965,8 +976,7 @@ OnCalendar=daily
 #reboot and now it will run daily to check it ran in the future just type:
 
 journalctl | grep fstrim.service
-
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 ## At and Cron (use Yasat plugin for audit)
 Only allow root and people with verified need to run cron jobs
 Setup cron.allow and cron.deny
@@ -1000,7 +1010,7 @@ protection
 #Audit with yasat: sudo yasat -p postfix.test
 
 ##NTP Network Time Protocol audit with yasat: sudo yasat -p ntp.test
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 pam_tally2
 ● This is used to lockout an account for consecutive failed login
 attempts
@@ -1031,7 +1041,7 @@ Limit access to su command
 auth required pam_wheel.so use_uid
 
 dpkg-statoverride --update --add root adm 4750 /bin/su
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 Compile Kernel steps:
 
 # cd /usr/src/linux
@@ -1060,7 +1070,7 @@ sudo hmod 755 /usr/bin/cc
 sudo hmod 755 /usr/bin/gcc
 sudo hmod 755 /usr/bin/*c++
 sudo hmod 755 /usr/bin/*g++
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 ## Top
 
 • u [user name] To display only the processes belonging to the user. Use + or blank to see
@@ -1072,7 +1082,7 @@ all users
 SHIFT + M  sets memory + C will take you back to default CPU
 
 F lets you adjust the fields 
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 ## Browser Tips 
 
 if you added firejail sandbox and then ran in terminal: sudo firecfg   then skip the following
@@ -1103,7 +1113,7 @@ enable: Throttle non-visible cross-origin iframes
 enable: CSP policy for Web Payment API
 
 There are many more options may have to tinker around until you get it how you like it :) 
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
 ## Computer has > 4 GB RAM speed things up with zram ~ https://easylinuxtipsproject.blogspot.com/p/speed-mint.html#ID1.2
 
 sudoedit /etc/default/grub
@@ -1162,9 +1172,78 @@ dmesg | grep zswap
 cat /sys/module/zswap/parameters/max_pool_percent
 
 #It should report 20, which is the default, or 40 at the most.
----------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+## Install haveged and jitterentropy for better Entropy (random number generation) why? computers use a lot it and it's a bonus to have plenty of it especially with encryption https://hakk.gg/linux-hardening-guide/#entropy
+
+sudo apt install haveged jitterentropy-rngd
+
+sudo systemctl enable haveged
+
+#Now to get jitterentropy acting right we need create a config file: 
+
+sudo touch /usr/lib/modules-load.d/jitterentropy.conf
+
+Next lets edit it: 
+
+sudo nano /usr/lib/modules-load.d/jitterentropy.conf
+
+copy/paste into file and close Ctrl X and lastly save press Y then Enter:
+
+jitterentropy_rng
 
 
+Now reboot and they'll begin working away creating randomness
+--------------------------------------------------------------------------------------------------------------------------------------------
+## Kick any idle users off (besides you of course) just for the sake of security in general after 5 minutes:
+
+sudo touch /etc/profile.d/os-security.sh
+
+sudo nano /etc/profile.d/os-security.sh
+
+copy/paste below into file then close and save:
+
+readonly TMOUT=300
+readonly HISTFILE
+
+Last make executable:
+
+sudo chmod +x /etc/profile.d/os-security.sh
+
+That's it it'll start working after a reboot  https://wiki.centos.org/HowTos/OS_Protection
+--------------------------------------------------------------------------------------------------------------------------------------------
+## Lockdown Cron and At ~ so that only root and trusted users may be able to use and no others-this script will do this by creating a cron.allow & cron.deny file inside /etc directory ~
+
+First create a bash script file named lockCron.sh      <--------- (use anything you like for name)  
+
+sudo touch /etc/cronLock.sh
+
+Now open for editing:
+
+sudo nano /etc/cronLock.sh
+
+And copy/paste below then close & save:
+******************************************************************
+#!/bin/sh
+echo "Locking down Cron"
+touch /etc/cron.allow
+chmod 600 /etc/cron.allow
+awk -F: '{print $1}' /etc/passwd | grep -v root > /etc/cron.deny
+echo "Locking down AT"
+touch /etc/at.allow
+chmod 600 /etc/at.allow
+awk -F: '{print $1}' /etc/passwd | grep -v root > /etc/at.deny
+exit 0
+******************************************************************
+#Make it executable:
+
+sudo chmod +x /etc/cronLock.sh
+
+Now run the script: cd /etc
+
+sudo ./cronLock.sh 
+
+That's all :) should print in terminal "Locking down Cron" & "Locking down AT"          https://wiki.centos.org/HowTos/OS_Protection
+--------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
