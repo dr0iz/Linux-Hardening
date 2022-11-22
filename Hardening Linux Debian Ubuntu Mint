@@ -534,6 +534,8 @@ WantedBy=multi-user.target
 
 Replace eth0 with your network interface. You can find the mac address with "ip a" command 
 
+Then activate it: sudo systemctl enable mac
+
 Macchanger prompts upon install to automatically change Mac (select No) but it's only when you disable and enable network and not at boot so, this way is more convinient 
 -----------------------------------------------------------------------------------------------------------------------------------------
 ## Kernel settings placed in grub to apply: https://theprivacyguide1.github.io/linux_hardening_guide#boot_parameters
