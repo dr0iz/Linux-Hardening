@@ -1,7 +1,7 @@
 - 👋 Hi, I’m @dr0iz aka Steve
-- 👀 I’m interested in Linux, Gadgets and good Keyboards
-- 🌱 I’m currently learning bash scripting
-- 💞️ I’m looking to collaborate on hardening Linux Debian, Ubuntu and or Mint instaed of having to search all over the web, a one stop shop guide for both new and existing users of Linux OS
+- 👀 I’m interested in Linux Security Hardening and Optimization
+- 🌱 I’m currently working on this project https://github.com/dr0iz/Linux-Hardening Securing and Optimizing Linux OS 
+- 💞️ I’m looking to collaborate on hardening Linux Debian, Ubuntu, Pop_Os and or Mint instaed of having to search all over the web, a one stop shop guide for both new and existing users of Linux OS would be ideal :)
 - 📫 How to reach me contact me via Twitter aNdr0iz will update with an email soon
 
 <!---
