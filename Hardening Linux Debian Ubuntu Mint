@@ -472,7 +472,7 @@ exit 0
 
 Then close using Ctrl+x Press Y then Press Enter
 
-Lets make it executable: chmod +x /opt/clean.sh
+Lets make it executable: chmod +x /opt/rfkill.sh
 
 Now we’ll create a Service that will execute it as root:
 
@@ -480,7 +480,7 @@ sudo touch /etc/systemd/system/rfkill.service
 
 Now lets edit the Service:
 
-sudoedit /etc/systemd/system/clean.service
+sudoedit /etc/systemd/system/rfkill.service
 
 Copy & Paste:
 
