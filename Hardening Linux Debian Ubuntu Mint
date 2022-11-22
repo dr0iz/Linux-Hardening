@@ -513,7 +513,7 @@ sudoedit /etc/systemd/system/mac.service
 
 #Now copy & paste ~ 
 
-Unit]
+[Unit]
 Description=macchanger on eth0
 Wants=network-pre.target
 Before=network-pre.target
