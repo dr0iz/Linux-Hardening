@@ -1280,6 +1280,7 @@ GRUB will now be password protected.
 -----------------------------------------------------------------------------------------------------------------------------------------
 ## Use NTS Network Time Secure instead of regular insecure NTP 
 
+*note NTS key exchange: Establishes the necessary key material between the NTP client and the server, using a Transport Layer Security (TLS) handshake
 
 sudo apt install ntpsec
 
@@ -1325,7 +1326,9 @@ journalctl | grep ntpsec
 
 Then we'll see if our new network time secure peers are up and working type into terminal:
 
-ntpq -p
+ntpq -p  (the t column is the cookie count and should read 8 if none have been lost) 
+
+ntpq -c nts
 
 Also we can use this command to check it: 
 
@@ -1339,6 +1342,7 @@ https://www.netnod.se/netnod-time/how-to-use-nts
 https://docs.ntpsec.org/latest/NTS-QuickStart.html#client
 https://www.ntpsec.org/
 https://www.netnod.se/blog/what-network-time-security-and-why-it-important
+https://datatracker.ietf.org/meeting/106/materials/slides-106-ntp-nts-deployment-03.pdf <------list port numbers and most NTS servers
 -----------------------------------------------------------------------------------------------------------------------------------------
 
 
