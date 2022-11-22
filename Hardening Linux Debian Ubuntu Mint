@@ -1334,6 +1334,7 @@ This will list the clients we have listed in the config if all is well :)
 
 Lastly be sure and turn off any other clocks such as timesyncd : sudo systemctl disable timesyncd.service
 
+https://www.netnod.se/netnod-time/how-to-use-nts
 https://docs.ntpsec.org/latest/NTS-QuickStart.html#client
 https://www.ntpsec.org/
 https://www.netnod.se/blog/what-network-time-security-and-why-it-important
