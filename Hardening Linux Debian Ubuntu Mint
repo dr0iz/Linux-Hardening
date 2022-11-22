@@ -1290,11 +1290,12 @@ sudoedit /etc/ntpsec/ntp.conf
 Once open scroll down to:
 
 # Public NTP servers supporting Network Time Security:
-server time.cloudflare.com nts    <--------this one is listed be sure to remove the # in front to activate (secure)
-server nts.ntp.se nts <---------add just to have a back up (secure)
-server time.apple.com <------back up (unsecure)
+server time.cloudflare.com nts    <--------this one is listed be sure to remove the # to activate
+server sth1.nts.netnod.se nts iburst
+server sth2.nts.netnod.se nts iburst
+server nts.ntp.se nts
 
-Then you'll see a lot of pools listed just add a # in front all all or keep ones you like to use (I just use the above)
+Then you'll see a lot of pools listed just add a # in front of all of them :)
 
 next at the top or near the top if you want logs you'll want to create a folder in /var/logs:
 
