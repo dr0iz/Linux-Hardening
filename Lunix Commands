@@ -490,11 +490,13 @@ netstat -tanp | grep LISTEN
 # make sure all world writable directories have sticly bit set :
 find PART -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print
 (if found then add the sticky bit): chmod +t /dir
------------------------------------------------------------------------------------------------------------------------------------
-If you have their key saved to a file - in this case we have our friend Jane's keyblock saved as jane.asc:
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+## Import GPG key ~
 
-$ gpg --import jane.asc 
-  gpg: key 0xBDC6C9E273F65634: public key "Jane Doe <janedoe@nunya.biz>" imported
+If you have their key saved to a file - in this case we have our friend James's keyblock saved as james.asc:
+
+$ gpg --import james.asc 
+  gpg: key 0xBDC6C9E273F65634: public key "Jane Doe <jamesdoe@nunya.biz>" imported
   gpg: Total number processed: 1
   gpg:               imported: 1
 If you just copied their keyblock and want to paste it:
@@ -504,7 +506,24 @@ $ gpg --import [press 'Enter']
   [Press Ctrl+D]
 
 That's it! 
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+## Steps to take if a User leaves or you want to remove the User ~
 
+#Locating all files and or directories of a User and deleting:
 
+ find .-user henry -type f -exec rm -f {} \;
+ find .-user henry -type d -exec rmdir {} \;
 
+#Expire the account, effectively locking the password:
+
+ chage -E /01/01/22 henry
+
+#The incoming mail can be redirected to another user:
+
+su - henry -c "mail -F bigboss"
+
+# Finally Delete the useraccount:
+
+userdel -r henry
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 
