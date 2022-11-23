@@ -31,7 +31,7 @@ program will run correctly
 make install
 
 That's all :) test program ...
------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 ## see what shared libraries a program uses and their location
 
 ldd /pathOfProgram
@@ -39,7 +39,7 @@ ldd /pathOfProgram
 #after installing shared libraries run this makes sure the system can find them:
 
 sudo ldconfig
------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 ## top command 
 
 sort by memory and not default cpu:
@@ -50,7 +50,7 @@ press "?" to get a list of cmds
 
 press "f" for sorting the various fields 
 
------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 ##find something then delete it:
 
 sudo find / -iname nameHere -exec rm {} \;
@@ -60,7 +60,7 @@ sudo find / -iname nameHere -exec rm {} \;
 check-enhancements
 which-pkg-broke
 dpigs
------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 ## redirect all DNS queries to 1.1.1.1
 
 iptables -t nat -A OUTPUT -p udp --dport 53 -j DNAT --to-destination 1.1.1.1
@@ -69,7 +69,7 @@ iptables -t nat -A OUTPUT -p tcp --dport 53 -j DNAT --to-destination 1.1.1.1
 Remove rules: iptables -t nat -D OUTPUT -p udp --dport 53 -j DNAT --to-destination 1.1.1.1
 iptables -t nat -D OUTPUT -p tcp --dport 53 -j DNAT --to-destination 1.1.1.1
 
------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 Look for suspicious strings:
 
 $ sudo chkrootkit -x | less
@@ -77,7 +77,7 @@ $ sudo chkrootkit -x | less
 rkhunter --propupd
 
 rkhunter --check --sk
------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 ## use the "sed" command for ex. remove hello world from a file:
 
 sed 's/hello/world/' input.txt > output.txt
@@ -90,7 +90,7 @@ or don't output the file and edit it in place using the "i" switch:
 
 sed -n '45p' file.txt
 
------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 # check mitigations are enabled or not 
 
 fgrep -r '' /sys/devices/system/cpu/vulnerabilities
@@ -148,7 +148,7 @@ sudo fstrim -av   (performs a Trim on Disk)
 
 rm -rfv ~/.cache/thumbnails  (deletes thumbmails)
 
------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 sudo ausearch -f PATH (example sudo ausearch -f /home/stv/Passwords) or sudo ausearch -f passwd
 
 sudo service auditd rotate
@@ -167,7 +167,7 @@ To review what executables are doing:
 ausearch --key access --raw
 
 aureport -x --summary
------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 sudo dpkg -i packageName  (installs package)
 
 
@@ -436,8 +436,8 @@ sudo apt update && apt upgrade -y && apt dist-upgrade -y && reboot
 grep MemTotal /proc/meminfo
 
 ip -a
------------------------------------------------------------------------------------------------------------------------------------
-sudo aa-status
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+sudo aa-status (apparmor info)
 
 ps auxZ | grep -v '^unconfined'
 
@@ -472,7 +472,7 @@ netstat -at
 cat /etc/crontab
 ls /etc/cron.*
 crontab –u root –l
------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 find /tmp -type f \( ! -user root \) -atime +1 -delete
 
 # check mitigations are enabled or not 
@@ -482,7 +482,7 @@ fgrep -r '' /sys/devices/system/cpu/vulnerabilities
 grep -H '' /sys/devices/system/cpu/vulnerabilities/*
 
 
-rkhunter --check --sk
+rkhunter --check --sk (scan computer)
 
 
 netstat -tanp | grep LISTEN
@@ -499,14 +499,16 @@ $ gpg --import james.asc
   gpg: key 0xBDC6C9E273F65634: public key "Jane Doe <jamesdoe@nunya.biz>" imported
   gpg: Total number processed: 1
   gpg:               imported: 1
-If you just copied their keyblock and want to paste it:
+  
+  
+If you just copied their public keyblock and want to paste it:
 
 $ gpg --import [press 'Enter']
   [Paste the keyblock and press 'Enter' again]
   [Press Ctrl+D]
 
-That's it! 
-----------------------------------------------------------------------------------------------------------------------------------------------------------
+Easy Peasy 
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Steps to take if a User leaves or you want to remove the User ~
 
 #Locating all files and or directories of a User and deleting:
@@ -525,5 +527,5 @@ su - henry -c "mail -F bigboss"
 # Finally Delete the useraccount:
 
 userdel -r henry
-----------------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 
