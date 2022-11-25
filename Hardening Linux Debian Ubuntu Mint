@@ -197,10 +197,7 @@ or stick with stock dns and use cloudflare:
 
 sudo echo "nameserver 1.1.1.1" | sudo tee -a /etc/resolv.conf
 
-can also be typed : sudo echo 'nameserver 1.1.1.1' >> /etc/resolv.conf 
-
-(I like 2nd way :) ) 
-
+or type: sudo echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
 ----------------------------------------------------------------------------------------------------------------------------------
 ## set timesyncd to use cloudflare & apple 
 
@@ -768,12 +765,11 @@ install usb-storage /bin/true
 
 Save and close 
 -----------------------------------------------------------------------------------------------------------------------------------------
-## Install secure DNS that uses HTTPS proxy (can choose between Google or Cloudflare)
+## Install secure DNS that uses HTTPS proxy (can choose between Google or Cloudflare) or use systemd with TLS 
 
 sudo apt install dnss
 
 It comes with Google 8.8.8.8 DNS over HTTPS set as default to change :
-
 
 # Use Cloudflare's 1.1.1.1:
 sudo dnss -enable_dns_to_https -https_upstream="https://1.1.1.1/dns-query"
@@ -781,11 +777,45 @@ sudo dnss -enable_dns_to_https -https_upstream="https://1.1.1.1/dns-query"
 # Use Google's dns.google:
 sudo dnss -enable_dns_to_https -https_upstream="https://dns.google/dns-query"
 
-That's it :)
+That's it! 
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+DNS another method and perhaps the best: Make use of systemd with TLS & DNSSEC just install:
+
+sudo apt install systemd-resolved 
+
+Next edit the config file:
+
+sudoedit /etc/systemd/resolved.conf
+
+next to #DNS remove the # sign and then type 1.1.1.1 (see below)
+
+next to #DNSSEC remove # sign and type yes after thus removing the existing "no" (see below)
+
+lastly scroll down a little and you'll see #DNSOverTLS=yes remove # sign and make sure it reads "yes" so that it ends up all looking like this:
+
+********************************************************
+
+DNS=1.1.1.1
+FallbackDNS=1.0.0.1
+#Domains=
+DNSSEC=yes
+DNSOverTLS=yes
+#MulticastDNS=yes
+#LLMNR=yes
+#Cache=yes
+#CacheFromLocalhost=no
+#DNSStubListener=yes
+#DNSStubListenerExtra=
+#ReadEtcHosts=yes
+#ResolveUnicastSingleLabel=no
+
+********************************************************
+
+afterwards test by visiting this site: https://1.1.1.1/help and look at DNS TLS it should now read Yes
 -----------------------------------------------------------------------------------------------------------------------------------------
 ## Next add some software security and what not pick and choose ...
 
-sudo apt update && sudo apt install logwatch auditd rkhunter chkrootkit yasat lynis stacer fcheck
+sudo apt update && sudo apt install logwatch auditd rkhunter chkrootkit yasat lynis stacer fcheck debsums debsecan
 
 #Yasat is a easy auditing tool I use to check permissions and couple other plugins all depends on what your device is set up with ...
 
