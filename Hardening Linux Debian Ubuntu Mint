@@ -625,7 +625,7 @@ sudoedit /etc/security/access.conf
 
 #at bottom add:
 
--:ALL EXCEPT root:tty1 yourUserName
+-:ALL EXCEPT root:tty1 yourUserName shutdown sync:LOCAL  <-----optional 
 
 #save and close 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -828,11 +828,14 @@ sudo yasat -p pluginNameGoesHere
 That's it let it complete and look over see what it finds...
 
 
+
 #Lynis also a auditing program (good idea to download from their website so you have the latest version) 
 
 https://cisofy.com/downloads/lynis/
 
 sudo lynis audit system
+
+After audit completes view all suggestions and warnings by typing in terminal:  grep -E "^warning|^suggestion" /var/log/lynis-report.dat
 
 
 
