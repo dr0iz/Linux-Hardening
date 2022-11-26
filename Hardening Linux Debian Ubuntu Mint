@@ -1387,23 +1387,6 @@ https://docs.ntpsec.org/latest/NTS-QuickStart.html#client
 https://www.ntpsec.org/
 https://www.netnod.se/blog/what-network-time-security-and-why-it-important
 https://datatracker.ietf.org/meeting/106/materials/slides-106-ntp-nts-deployment-03.pdf <------list port numbers and most NTS servers
---------------------------------------------------------------------------------------------------------------------------------------------------------
-## Block wireless drivers w/ loop blacklist in modprobe.d (or use above method using rkill or even both to be certain nothing wireless is working)
-
-*name it what you like of course mine is named wifidriversX.conf just be sure it ends with ".conf" 
-
-Lets create the file:
-sudo touch /etc/modprobe.d/wifidriversX.conf
-
-Next open for edit:
-sudo nano /etc/modprobe.d/wifidriversX.conf
-
-Now copy/paste:
-for i in $(find /lib/modules/`uname -r`/kernel/drivers/net/wireless -name "*.ko" -type f) ; do echo blacklist $i >> /etc/modprobe.d/blacklist-wireless ; done
-
-Close and Save ~ Done Reboot   
-
-https://wiki.centos.org/HowTos/OS_Protection#Network_Security
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Set up a private - secure encrypted directory for whatever passwords ... logins 
 
