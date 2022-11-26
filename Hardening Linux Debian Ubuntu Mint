@@ -1,7 +1,4 @@
-
-
 Using Linux few years and enjoy a lot these are some of my notes from various books and or articles - websites on mainly hardening - securing and hopefully it saves others time from having to search as much ~
-
 
 
 ## Installation 
@@ -29,28 +26,9 @@ Set /tmp and /var/tmp so that a user can only delete their own files with sticky
 
 sudo chmod 1777 /tmp /var/tmp
 
-some set /usr to "ro" read only I like to but it can be a pain because of updates need to write to /usr and any software installed ... however it's more secure to do so up to you ...
+set /boot to ro (read only)  
 
-set /boot to ro (read only) 
-
-#This is what works well just when you login run: sudo mount -o remount,ro,noatime,nodev /usr
-and before you install software or update just run: sudo mount -o remount,rw,noatime,nodev /usr Once installed switch it back to read only "ro": sudo mount -o remount,ro,noatime,nodev /usr
-
-
-##work for gov and or mil and or have sensitive data that one could try forcing you to get to then install cryptsetup-nuke-password:
-
-(This provides a relatively stealth way to make your data unreadable in case of emergency)
-
-sudo apt install cryptsetup-nuke-password 
-
-To use type in terminal: dpkg-reconfigure cryptsetup-nuke-password
-
-
-Now make up a password and make sure it's different then your usual one
-
-
-This will Erase Your LUKS key (encryption key)when a certain special password is entered (that you make up) at the default unlock prompt if you fear seizure of your data this way the data can never be decrypted 
-
+set /usr to ro (read only)
 
 #If /usr is mounted ro "read only" then package manager can't install - update software unless you remove read only or add the following to the apt.conf so that it automatically does this for you:
 
@@ -65,12 +43,18 @@ DPkg
 Pre-Invoke { "mount /usr -o remount,rw" };
 };
 
-Then close and save. This will just set /usr to read write so that it can install software or updates and afterwards just type: 
+Then close and save. This will just set /usr to read write so that it can install software or updates and once your finished updating and or installing software just just type: 
 
-sudo mount -o remount,ro /usr     <-----back to read only mode
+sudo mount -o remount,ro /usr        <-----back to read only mode
 
-You could have DPkg try and mount it back to read only automatically after installing software or uppdates but it's buggy best just do the command yourself in terminal. 
+You could have DPkg try and mount it back to read only automatically after installing software or updates but it's buggy best just do the command yourself in terminal. 
 
+*Information:
+noexec – Prevents execution of binaries on mounted file systems. This prevents remote users from executing unwanted binaries on your system.
+
+nosuid – Disables set-user-identifier or set-group-identifier bits. This prevents remote users from gaining higher privileges by running a setuid program.
+
+nodev – Prevents character and block special devices from being defined, or if they exist, from being used as character and block special devices. This prevents remote users from getting out of chrooted server jails.
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Partition Mount Example:   https://obscurix.github.io/security/mount-options.html
 
@@ -81,12 +65,12 @@ sudoedit /etc/fstab
 # <file system> <mount point>   <type>  <options>       <dump>  <pass>
 /dev/mapper/tuta--vg-root /               ext4    noatime,nosuid,errors=remount-ro 0       1
 # /boot was on /dev/nvme0n1p2 during installation
-UUID=31fc417f-98e9-4dca-9328-281e7b9b2b1a /boot           ext2    ro,noatime,nodev,nosuid,noexec 0       2
+UUID=31fc417f-98e9-4dca-9328-281e7b9b2b1a /boot           ext2    ro,noatime,nodev,nosuid,noexec 0       2   <-----read only boot
 # /boot/efi was on /dev/nvme0n1p1 during installation
 UUID=AB9C-A988  /boot/efi       vfat    umask=0077      0       1
 /dev/mapper/tuta--vg-home /home           ext4    rw,noatime,nodev,nosuid	0       2
 /dev/mapper/tuta--vg-tmp /tmp            ext4    rw,noatime,nodev,nosuid,noexec	0       2
-/dev/mapper/tuta--vg-user /usr            ext4    ro,noatime,nodev   0       2
+/dev/mapper/tuta--vg-user /usr            ext4    ro,noatime,nodev   0       2           <-------read only user 
 /dev/mapper/tuta--vg-var /var            ext4    noatime,nodev,nosuid 0       2
 /dev/mapper/tuta--vg-logs /var/log        ext4    rw,noatime,nodev,nosuid,noexec 0       2
 /dev/mapper/tuta--vg-vartmp /var/tmp        ext4    rw,noatime,nodev,nosuid,noexec	0       2
@@ -94,24 +78,27 @@ UUID=AB9C-A988  /boot/efi       vfat    umask=0077      0       1
 
 udev /dev devtmpfs rw,nosuid,noexec,noatime 0 00                                       
 devpts /dev/pts devpts rw,newinstance,ptmxmode=0666 0 0                                       
-tmpfs /dev/shm tmpfs rw,nodev,nosuid,noexec 0 0                                        
-tmpfs /home/userName/.cache tmpfs rw,size=400M,noexec,noatime,nodev,uid=userName,gid=userGroup,mode=700 0 0
+tmpfs /dev/shm tmpfs rw,nodev,nosuid,noexec 0 0     <----secure shared memory                                   
+tmpfs /home/userName/.cache tmpfs rw,size=600M,noexec,noatime,nodev,uid=userName,gid=userGroup,mode=700 0 0    <-----load cache in RAM 
 
 #End              https://book.hashbang.sh/docs/security/linux_hardening/
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-## Adding users and or groups (New)
 
-sudo useradd john_doe -m -s /bin/bash -g sudo -G adm,systemd-journal -c 'Johnny Does'
+##work for gov and or mil and or have sensitive data that one could try forcing you to get to then install cryptsetup-nuke-password:
 
-#m to make /home ---- s to set bash ----- g to add to primary group-----G add to secondary groups ----- c for comments like real name or personal info and use quotes if there are any spaces whitespace between words or name single quotes or double doesn't matter...
+This provides a relatively stealth way to make your data unreadable in case of emergency
 
-#lastly assign a password:
+sudo apt install cryptsetup-nuke-password 
 
-sudo passwd john_doe
+To use type in terminal: sudo dpkg-reconfigure cryptsetup-nuke-password 
 
+and it'll prompt you for a password and to confirm it. Be certain it is different from your regular login password.
 
-#useradd does not make a home by default but adduser does :) adduser is a Perl wrapper for useradd
+That's it! 
 
+This will Erase Your LUKS key (private encryption key) when a certain special password is entered (that you made up) at the default unlock prompt if you fear seizure of your data this way the data can never be decrypted
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+## Adding user: 
 
 #(Existing) Already have account and want to add it to sudo and or admin:
 
@@ -123,18 +110,20 @@ sudo adduser "$USER" sudo
 
 sudo usermod johnDoe -G sudo -a   <------------For existing user
 
-sudo useradd johnDoe -g sudo   <----------At creation time
+sudo useradd -m -s /bin/bash johnDoe -g sudo   <----------At creation time
 
 
 sudo find / -group johnDoe -exec chgrp newGroup {} \;   (if user changes group then locate all their files from old group and set to the new group)
 
+
+
 ## You have normal account w/o sudo and would like to upgrade type in terminal:
 
-su 
+Type:  su   then press Enter 
 
-sudo usermod -a -G sudo,adm yourUserName  <-------adds you to sudo group & admin
+Type in roots passwd and then:
 
-sudo usermod -a -g adm yourUserName   <------adds you to admin group
+sudo usermod -g sudo yourUserName
 
 # add yourself to sudoers file type:  sudo visudo 
 
@@ -147,6 +136,12 @@ Example:
 
 root            ALL=(ALL:ALL) ALL
 yourUserName    ALL=(ALL:ALL) ALL    <------------- like this 
+
+
+# Long method:
+sudo useradd john_doe -m -s /bin/bash -g sudo -G adm,systemd-journal -c 'Johnny Does'
+
+#m to make /home ---- s to set bash ----- g to add to primary group-----G add to secondary groups ----- c for comments like real name or personal info and use quotes if there are any spaces whitespace between words or name single quotes or double doesn't matter...
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## install firewall then add rules last activate:
 
@@ -184,9 +179,10 @@ sudo systemctl enable --now ufw
 
 sudo ufw status verbose  <---------take a look at your work see if missing anything ... 
 
-lastly go to the folder /etc/ufw and find "before rules" open then mark out icmp and multicast upnp and save 
+lastly go to the folder /etc/ufw and find "before rules" open for editing then locate the icmp, multicast, & UPNP rules. Place a # sign to comment out finally save and reload ufw: sudo ufw reload
 
-check your rules : sudo ufw staus verbose 
+
+check your rules with: sudo ufw staus verbose 
 
 or : sudo ufw status numbered 
 
@@ -194,22 +190,6 @@ to delete sudo ufw delete (numberGoesHere) or sudo ufw delete deny ssh ...
 
 Of course some will need inbound rules perhaps ssh: sudo ufw allow in 22/tcp or for a server: sudo ufw allow in 443/tcp
 sudo ufw allow in 80/tcp
---------------------------------------------------------------------------------------------------------------------------------------------------------
-## install a https dns proxy 
-
-sudo apt install dnss 
-
-(it starts auto just reboot it uses Googles dns to use Cloudflare read the read me "README.md
-" in /usr/share/doc/dnss there are the changes you'd need to copy paste into terminal) 
-
-
-or stick with stock dns and use cloudflare:
-
-## cloudflare dns set
-
-sudo echo "nameserver 1.1.1.1" | sudo tee -a /etc/resolv.conf
-
-or type: sudo echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## set timesyncd to use cloudflare & apple 
 
@@ -221,14 +201,11 @@ echo "FallbackNTP=time.apple.com" | sudo tee -a /etc/systemd/timesyncd.conf
 
 sudoedit /etc/hosts.deny 
 
-#At bottom remove # beside ALL:PARANOID 
+#At the bottom remove the # sign beside ALL:PARANOID 
 
 #then save and close 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-## See what programs are listening waiting for a connection:
-
-netstat -tanp | grep LISTEN
-
+## Disable Services if you are not planning on using:
 
 ## disable cups
 
@@ -332,33 +309,6 @@ sudo aa-status
 
 ps auxZ | grep -v '^unconfined'
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-## logs:
-
-journalctl | grep errors
-
-journalctl | grep critical
-
-journalctl | grep warning
-
-journalctl | grep failed
-
-journalctl | grep debug
-
-journalctl | grep info
-
-sudo cat /var/log/kern.log | grep DENIED
-
-logwatch –range All –archives –detail Med | more
-
-sudo logwatch | less
-
-logwatch –mailto [email protected] –range All 
-
-sudo find /var/log/ -type f \( -name “*.log” \) -exec tail -f “$file” {} + | more
-
---------------------------------------------------------------------------------------------------------------------------------------------------------
-## secure X11
-
 sudoedit /etc/X11/Xwrapper.config  
 
 then add this:  needs_root_rights = no
@@ -375,10 +325,7 @@ sudo systemctl enable tmp.mount
 
 systemctl status tmp.mount
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-## Create a tmp & Secure /tmp and /var/tmp ~
-
-Temporary storage directories such as /tmp, /var/tmp and /dev/shm allow a hacker to have a place to do naughty things :)
-
+## Create a tmp & then secure /tmp and /var/tmp:
 
 #Securing /tmp folder
 
@@ -418,19 +365,11 @@ sudo mount -o remount /tmp
 Securing the /var/tmp because some software use this folder as a temporary folder. Any files and folders within this directory needs to be secured. We will use the /tmp folder we just created by creating a symbolic link (soft-link)
 
 sudo mv /var/tmp /var/tmpold
-sudo ln -s /tmp /var/tmp  <====================if you have a tmp already at least link with var/tmp 
+sudo ln -s /tmp /var/tmp  <------creates a soft symlink to tmp thus combining the two together
 sudo cp -prf /var/tmpold/* /tmp/
 sudo rm -rf /var/tmpold/
 
 Then reboot      https://bookofzeus.com/harden-ubuntu/server-setup/secure-tmp-var-tmp/
---------------------------------------------------------------------------------------------------------------------------------------------------------
-## Secure Shared Memory (same as shown above in Example Partition mount options)
-
-sudoedit /etc/fstab
-
-tmpfs     /dev/shm     tmpfs	defaults,noexec,nosuid	0	0
-
-tmpfs     /run/shm    tmpfs	defaults,noexec,nosuid	0	0
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Disable IRQ Balance, edit /etc/default/irqbalance:
 
@@ -442,13 +381,13 @@ ENABLED=0
 ## Improve performance
 #Swappiness in the file should be set to 1 Skipping this step may cause both poor performance, whereas setting it to 1 will cause swap to act as an emergency buffer, preventing out-of-memory crashes. You can do this with the following commands:
 
-sudo echo 1 | sudo tee /proc/sys/vm/swappiness  <---temporary
+sudo echo 'vm.swappiness=1' >> /etc/sysctl.conf
 
-sudo echo 'vm.swappiness=1 >> /etc/sysctl.conf'     <-------permanent 
 
 #also if you have pleny of Ram > 12GB:
 
 # Improve cache management
+
 sudo echo 'vm.vfs_cache_pressure=50' >> /etc/systemctl.conf
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Secure SWAP
@@ -458,94 +397,6 @@ sudo chown root:root /swapfile
 sudo chmod 0600 /swapfile
 
 Reboot
-----------------------------------------------------------------------------------------------------------------------------------------
-noexec – Prevents execution of binaries on mounted file systems. This prevents remote users from executing unwanted binaries on your system.
-
-nosuid – Disables set-user-identifier or set-group-identifier bits. This prevents remote users from gaining higher privileges by running a setuid program.
-
-nodev – Prevents character and block special devices from being defined, or if they exist, from being used as character and block special devices. This prevents remote users from getting out of chrooted server jails.
---------------------------------------------------------------------------------------------------------------------------------------------------------
-## Block all wireless devices (bluetooth wifi) with Rfkill at boot ~
-
-sudo touch /opt/rfkill.sh && sudoedit /opt/rfkill.sh
-
-Once it’s opened copy and paste:
-
-#!/bin/sh
-
-sleep 20
-
-rfkill block all
-
-exit 0
-
-Then close using Ctrl+x Press Y then Press Enter
-
-Lets make it executable: chmod +x /opt/rfkill.sh
-
-Now we’ll create a Service that will execute it as root:
-
-sudo touch /etc/systemd/system/rfkill.service
-
-Now lets edit the Service:
-
-sudoedit /etc/systemd/system/rfkill.service
-
-Copy & Paste:
-
-[Unit]
-
-Description=Rfkill Service
-
-[Service]
-
-ExecStart=/opt/rfkill.sh
-Type=oneshot
-
-[Install]
-
-WantedBy=multi-user.target
-
-Close it with Ctrl+x Press Y then Press Enter then type:
-
-sudo systemctl enable rfkill
-
-That’s all! Just reboot and check it ran by typing into Terminal: systemctl status rfkill 
---------------------------------------------------------------------------------------------------------------------------------------------------------
-## Change mac address at every boot service  https://theprivacyguide1.github.io/linux_hardening_guide#mac_address
-
-sudo apt install macchanger 
-
-sudo touch /etc/systemd/system/mac.service 
-
-sudoedit /etc/systemd/system/mac.service
-
-#Now copy & paste ~ 
-
-[Unit]
-Description=macchanger on eth0
-Wants=network-pre.target
-Before=network-pre.target
-BindsTo=sys-subsystem-net-devices-eth0.device
-After=sys-subsystem-net-devices-eth0.device
-
-[Service]
-ExecStart=/usr/bin/macchanger -e eth0
-Type=oneshot
-
-[Install]
-WantedBy=multi-user.target
-
-
-#press "Ctrl x" to close 
-
-#click "Y" and then press Enter to save
-
-Replace eth0 with your network interface. You can find the mac address with "ip a" command 
-
-Then activate it: sudo systemctl enable mac
-
-Macchanger prompts upon install to automatically change Mac (select No) but it's only when you disable and enable network and not at boot so, this way is more convinient 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Kernel settings placed in grub to apply: https://theprivacyguide1.github.io/linux_hardening_guide#boot_parameters
 
@@ -553,7 +404,11 @@ Macchanger prompts upon install to automatically change Mac (select No) but it's
 
 https://vez.mrsk.me/linux-hardening.html
 
+Type in terminal:
+
 sudoedit /etc/default/grub
+
+Then add:
 
 GRUB_CMDLINE_LINUX_DEFAULT="splash apparmor=1 lockdown=confidentiality lsm=lockdown,yama,apparmor modules.sig_enforce=1 slub_debug=F page_alloc.shuffle=1 init_on_alloc=1 init_on_free=1 slab_nomerge audit=1 amd_iommu=on iommu=pt"
 --------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -714,12 +569,25 @@ sudo chmod 600 /etc/shadow
 
 sudo chmod 400 /etc/gshadow
 
-
 sudo chmod o-rxw /boot
 
 sudo chmod o-rxw /home/userName
 
 sudo chmod 700 /root /boot /usr/lib/modules
+
+# Disable Compilers until needed:
+sudo chmod 000 /usr/bin/kgcc
+sudo chmod 000 /usr/bin/cc
+sudo chmod 000 /usr/bin/gcc
+sudo chmod 000 /usr/bin/*c++
+sudo chmod 000 /usr/bin/*g++  
+
+When needed just:
+sudo hmod 755 /usr/bin/kgcc
+hmod 755 /usr/bin/cc
+hmod 755 /usr/bin/gcc
+hmod 755 /usr/bin/*c++
+hmod 755 /usr/bin/*g++
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## block ceratin modules unwanted networking protocols and file types from being installed and or used 
 
@@ -1099,80 +967,6 @@ auth required pam_wheel.so use_uid
 
 dpkg-statoverride --update --add root adm 4750 /bin/su
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-Compile Kernel steps:
-
-# cd /usr/src/linux
-# make mrproper		# Clean everything, including config files
-# make oldconfig	# Reuse the old .config if existent
-# make menuconfig	# or xconfig (Qt) or gconfig (GTK)
-# make			# Create a compressed kernel image
-# make modules		# Compile the modules
-# make modules_install	# Install the modules
-# make install		# Install the kernel
-# reboot
-
-# Disable Compilers until needed:
-
-
-sudo chmod 000 /usr/bin/kgcc
-sudo chmod 000 /usr/bin/cc
-sudo chmod 000 /usr/bin/gcc
-sudo chmod 000 /usr/bin/*c++
-sudo chmod 000 /usr/bin/*g++  
-
-When needed just:
-
-sudo chmod 755 /usr/bin/kgcc
-chmod 755 /usr/bin/cc
-chmod 755 /usr/bin/gcc
-chmod 755 /usr/bin/*c++
-chmod 755 /usr/bin/*g++
---------------------------------------------------------------------------------------------------------------------------------------------------------
-## Top (may like nmon it's nifty) sudo apt install nmon (you want regret it :) )
-
-• u [user name] To display only the processes belonging to the user. Use + or blank to see
-all users
-• k [pid] Kill the process with pid.
-• 1 To display all processors statistics (Linux only)
-• R Toggle normal/reverse sort 
-
-SHIFT + M  sets memory + C will take you back to default CPU
-
-F lets you adjust the fields 
---------------------------------------------------------------------------------------------------------------------------------------------------------
-## Browser Tips 
-
-if you added firejail sandbox and then ran in terminal: sudo firecfg   then skip the following:
-
-right click a browser icon then click properties and edit now add firejail to the beginning of its command 
-
-
-
-firefox can make use of seccomp: firejail --seccomp firefox    thus limiting its access chromium can not use as it has its own however can still benefit from firejail: firejail chromium
-
-to see if it's sandboxed just type: firejail --list and or for more detail: firejail --tree
-
-reccomend adding:  noscript browser extension then in its setting select "Temporarily set top-level sites to TRUSTED" and "
-Any capability blocked in the top document must be blocked in its subdocuments too" 
-
-one more extension that is light and helpful is:  Ublock Origin    after installed adjust your filters list by clicking on their gears icon and you may want to add this filter to the list by selecting import at the bottom of the filter settings and pasting: 
-
-https://github.com/notracking/hosts-blocklists/raw/master/adblock/adblock.txt
-
-In chromium type in address bar: chrome://flags   then press enter
-
-enable: Block scripts loaded via document.write
-
-enable: Strict-Origin-Isolation
-
-enable: Support for HTTPS records in DNS
-
-enable: Throttle non-visible cross-origin iframes
-
-enable: CSP policy for Web Payment API
-
-There are many more options may have to tinker around until you get it how you like it :) 
---------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Computer has > 4 GB RAM speed things up with zram ~ https://easylinuxtipsproject.blogspot.com/p/speed-mint.html#ID1.2
 
 sudoedit /etc/default/grub
@@ -1392,7 +1186,7 @@ https://docs.ntpsec.org/latest/NTS-QuickStart.html#client
 https://www.ntpsec.org/
 https://www.netnod.se/blog/what-network-time-security-and-why-it-important
 https://datatracker.ietf.org/meeting/106/materials/slides-106-ntp-nts-deployment-03.pdf <------list port numbers and most NTS servers
----------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Set up a private - secure encrypted directory for whatever passwords ... logins 
 
 sudo apt install encryptfs-utils
@@ -1404,11 +1198,147 @@ sudo ecryptfs-setup-private
 It'll prompt you for a password and then create a mount passphrase besure to remember :) Reboot then any files written in ~/Private (/home/Private) will be encrypted 
 
 In case of emergency type: sudo encryptfs-recover-private    this will decrypt the data 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## logs:
+
+journalctl | grep errors
+
+journalctl | grep critical
+
+journalctl | grep warning
+
+journalctl | grep failed
+
+journalctl | grep debug
+
+journalctl | grep info
+
+sudo cat /var/log/kern.log | grep DENIED
+
+logwatch –range All –archives –detail Med | more
+
+sudo logwatch | less
+
+logwatch –mailto [email protected] –range All 
+
+sudo find /var/log/ -type f \( -name “*.log” \) -exec tail -f “$file” {} + | more
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Block all wireless devices (bluetooth wifi) with Rfkill at boot ~
+
+sudo touch /opt/rfkill.sh && sudoedit /opt/rfkill.sh
+
+Once it’s opened copy and paste:
+
+#!/bin/sh
+
+sleep 20
+
+rfkill block all
+
+exit 0
+
+Then close using Ctrl+x Press Y then Press Enter
+
+Lets make it executable: chmod +x /opt/rfkill.sh
+
+Now we’ll create a Service that will execute it as root:
+
+sudo touch /etc/systemd/system/rfkill.service
+
+Now lets edit the Service:
+
+sudoedit /etc/systemd/system/rfkill.service
+
+Copy & Paste:
+
+[Unit]
+
+Description=Rfkill Service
+
+[Service]
+
+ExecStart=/opt/rfkill.sh
+Type=oneshot
+
+[Install]
+
+WantedBy=multi-user.target
+
+Close it with Ctrl+x Press Y then Press Enter then type:
+
+sudo systemctl enable rfkill
+
+That’s all! Just reboot and check it ran by typing into Terminal: systemctl status rfkill 
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+## Change mac address at every boot service  https://theprivacyguide1.github.io/linux_hardening_guide#mac_address
+
+sudo apt install macchanger 
+
+sudo touch /etc/systemd/system/mac.service 
+
+sudoedit /etc/systemd/system/mac.service
+
+#Now copy & paste ~ 
+
+[Unit]
+Description=macchanger on eth0
+Wants=network-pre.target
+Before=network-pre.target
+BindsTo=sys-subsystem-net-devices-eth0.device
+After=sys-subsystem-net-devices-eth0.device
+
+[Service]
+ExecStart=/usr/bin/macchanger -e eth0
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target
+
+
+#press "Ctrl x" to close 
+
+#click "Y" and then press Enter to save
+
+Replace eth0 with your network interface. You can find the mac address with "ip a" command 
+
+Then activate it: sudo systemctl enable mac
+
+Macchanger prompts upon install to automatically change Mac (select No) this methid works better ...
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+## Browser Tips 
+
+if you added firejail sandbox and then ran in terminal: sudo firecfg   then skip the following:
+
+right click a browser icon then click properties and edit now add firejail to the beginning of its command 
 
 
 
+firefox can make use of seccomp: firejail --seccomp firefox    thus limiting its access chromium can not use as it has its own however can still benefit from firejail: firejail chromium
 
+to see if it's sandboxed just type: firejail --list and or for more detail: firejail --tree
 
+reccomend adding:  noscript browser extension then in its setting select "Temporarily set top-level sites to TRUSTED" and "
+Any capability blocked in the top document must be blocked in its subdocuments too" 
 
+one more extension that is light and helpful is:  Ublock Origin    after installed adjust your filters list by clicking on their gears icon and you may want to add this filter to the list by selecting import at the bottom of the filter settings and pasting: 
+
+https://github.com/notracking/hosts-blocklists/raw/master/adblock/adblock.txt
+
+In chromium type in address bar: chrome://flags   then press enter
+
+enable: Block scripts loaded via document.write
+
+enable: Strict-Origin-Isolation
+
+enable: Support for HTTPS records in DNS
+
+enable: Throttle non-visible cross-origin iframes
+
+enable: CSP policy for Web Payment API
+
+There are many more options may have to tinker around until you get it how you like it :) 
+--------------------------------------------------------------------------------------------------------------------------------------------------------
 
