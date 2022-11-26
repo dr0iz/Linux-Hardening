@@ -6,10 +6,7 @@ Using Linux few years and enjoy a lot these are some of my notes from various bo
 
 ## Installation 
 
-use lvm with seperate / /boot /home /var /tmp /usr and encrypted with luks
-
-
-can also do /var/log and /var/tmp /opt if you like 
+use lvm with seperate:  /boot / /home /opt /usr /var /tmp /var/log /var/tmp   encrypted w/ LUKS
 
 
 a tip I learned for efficiency after install was have one big home by creating soft links from /opt and /usr/local to home like so:
@@ -18,7 +15,11 @@ sudo ln -s /opt /home/opt
 
 sudo ln -s /usr/local /home/local
 
-add nosuid to all partitions in /etc/fstab besides /usr
+Then secure /var/tmp:
+
+sudo ln -s /tmp /var/tmp    
+
+add nosuid to all partitions in /etc/fstab besides /usr (usr will be read only)
 
 add nodev to all besides / root 
 
@@ -51,7 +52,7 @@ Now make up a password and make sure it's different then your usual one
 This will Erase Your LUKS key (encryption key)when a certain special password is entered (that you make up) at the default unlock prompt if you fear seizure of your data this way the data can never be decrypted 
 
 
-#If /usr is mounted ro "read only" then package manager can't install ~ update software unless you remove ro and reboot or add the following to the apt.conf:
+#If /usr is mounted ro "read only" then package manager can't install - update software unless you remove read only or add the following to the apt.conf so that it automatically does this for you:
 
 cd /etc/apt/apt.conf.d/
 
@@ -62,10 +63,14 @@ copy paste:
 DPkg
 {
 Pre-Invoke { "mount /usr -o remount,rw" };
-Post-Invoke { "mount /usr -o remount,ro" };
 };
 
-#little quirky best do as mentioned above manually: sudo mount -o remount,ro,noatime,nodev /usr
+Then close and save. This will just set /usr to read write so that it can install software or updates and afterwards just type: 
+
+sudo mount -o remount,ro /usr     <-----back to read only mode
+
+You could have DPkg try and mount it back to read only automatically after installing software or uppdates but it's buggy best just do the command yourself in terminal. 
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Partition Mount Example:   https://obscurix.github.io/security/mount-options.html
 
