@@ -147,30 +147,37 @@ yourUserName    ALL=(ALL:ALL) ALL    <------------- like this
 
 sudo apt install ufw 
 
-sudo ufw default deny (blocks in) allows out 
+sudo ufw default deny   <----blocks in allows out 
 
-(I like block out also)
+sudo ufw default deny outgoing   <----block out also if you like
 
-sudo ufw default deny outgoing
+sudo ufw deny telnet
 
-now lets add rules for out-
+sudo ufw deny ftp   <-------may need
 
-sudo ufw allow out 443/tcp (https)
+sudo ufw deny ssh  <------may need
 
-sudo ufw allow out 80/tcp  (http)
+sudo ufw deny from xxx.xxx.xxx.xxx    <-------block any ip address
 
-sudo ufw allow out 53 	(dns)
+#now lets add rules for out
 
-sudo ufw allow out 123 (time)
+sudo ufw allow out 443/tcp  <-------(https)
 
-sudo ufw allow out 67	(dhcp)
+sudo ufw allow out 80/tcp  <-------(http for most all your updates ... mirrors)
 
-sudo ufw allow out 25/tcp (email smtp) 
+sudo ufw allow out 53 	<------(dns)
 
-now lets enable : sudo ufw enable 
+sudo ufw allow out 123 <--------(time)
+
+sudo ufw allow out 67	<-------(dhcp)
+
+sudo ufw allow out 25/tcp <-----(email smtp) 
+
+sudo ufw enable 
 
 sudo systemctl enable --now ufw
 
+sudo ufw status verbose  <---------take a look at your work see if missing anything ... 
 
 lastly go to the folder /etc/ufw and find "before rules" open then mark out icmp and multicast upnp and save 
 
@@ -178,7 +185,7 @@ check your rules : sudo ufw staus verbose
 
 or : sudo ufw status numbered 
 
-to delete sudo ufw delete (numberGoesHere)
+to delete sudo ufw delete (numberGoesHere) or sudo ufw delete deny ssh ...
 
 Of course some will need inbound rules perhaps ssh: sudo ufw allow in 22/tcp or for a server: sudo ufw allow in 443/tcp
 sudo ufw allow in 80/tcp
@@ -1398,5 +1405,22 @@ Close and Save ~ Done Reboot
 
 https://wiki.centos.org/HowTos/OS_Protection#Network_Security
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+## Set up a private - secure encrypted directory for whatever passwords ... logins 
+
+sudo apt install encryptfs-utils
+
+Next just make a new secure locked directory by typing: 
+
+sudo ecryptfs-setup-private     
+
+It'll prompt you for a password and then create a mount passphrase besure to remember :) Reboot then any files written in ~/Private (/home/Private) will be encrypted 
+
+In case of emergency type: sudo encryptfs-recover-private    this will decrypt the data 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
 
 
