@@ -412,6 +412,9 @@ Reboot
 ## Kernel settings placed in grub to apply: https://theprivacyguide1.github.io/linux_hardening_guide#boot_parameters
 
 *note: substitue amd_iommu=on for Intel cpu add: intel_iommu=on
+If using ipv6 then remove: ipv6.disable=1 
+If not using audit then remove: audit=1
+
 
 https://vez.mrsk.me/linux-hardening.html
 
@@ -419,7 +422,7 @@ Type in terminal:
 
 sudoedit /etc/default/grub
 
-Then add:
+Then locate GRUB_CMDLINE_LINUX_DEFAULT= and add the following so it looks like:
 
 GRUB_CMDLINE_LINUX_DEFAULT="splash apparmor=1 lockdown=confidentiality lsm=lockdown,yama,apparmor modules.sig_enforce=1 slub_debug=F page_alloc.shuffle=1 init_on_alloc=1 init_on_free=1 slab_nomerge audit=1 amd_iommu=on iommu=pt ipv6.disable=1"
 --------------------------------------------------------------------------------------------------------------------------------------------------------
