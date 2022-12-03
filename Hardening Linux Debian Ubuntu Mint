@@ -1360,6 +1360,10 @@ enable: Block scripts loaded via document.write
 
 enable: Strict-Origin-Isolation
 
+enable: Isolated Sandboxed Iframes
+
+enable: Throttle non-visible cross-origin iframes
+
 enable: Support for HTTPS records in DNS
 
 enable: Throttle non-visible cross-origin iframes
