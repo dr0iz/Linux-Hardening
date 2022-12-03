@@ -175,6 +175,8 @@ sudo ufw allow out 67	<-------(dhcp)
 
 sudo ufw allow out 25/tcp <-----(email smtp) 
 
+sudo ufw allow out 853/tcp <---DNS + TLS 
+
 sudo ufw enable 
 
 sudo systemctl enable --now ufw
@@ -274,7 +276,7 @@ sudo systemctl mask unattended-upgrades
 
 ## Remove packages: 
 
-sudo apt purge popularity-contest* whoopsie* bluez* orca*
+sudo apt purge popularity-contest* whoopsie* bluez* orca* speech-dispatcher* sane-airscan* sane-utils*
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Install firejail and apparmor   https://pvera.net/posts/apparmor-firejail-sandboxing/
@@ -312,7 +314,7 @@ check messages of aa-notify: $sudo aa-logprof
 
 #add to grub:
 
-sudo nano /etc/default/grub     "splash apparmor=1 lockdown=confidentiality lsm=lockdown,yama,apparmor"
+sudo nano /etc/default/grub     "splash apparmor=1 lockdown=integrity lsm=lockdown,yama,apparmor"
 
 #status of apparmor shows enforced and more ...
 
@@ -439,8 +441,8 @@ fs.protected_fifos=2
 fs.protected_regular=2
 fs.suid_dumpable=0
 
-vm.swappiness=10 
-vm.vfs_cache_pressure=50
+vm.swappiness=1
+vm.vfs_cache_pressure=100
 vm.unprivileged_userfaultfd=0
 vm.mmap_rnd_bits=32
 vm.mmap_rnd_compat_bits=16
@@ -560,10 +562,13 @@ sudo chmod 750 /var/log/openvpn
 
 sudo chmod -R o-rxw /etc/snmp
 sudo chmod -R o-rxw /etc/apache2
-sudo chmod -R o-rxw /etc/postfix
 
-sudo chmod 644 /etc/passwd      <--------if not can be locked out LightDM Greeter (or other greeters) ... keep at 644 no less 
+sudo chmod -R 755 /etc/postfix   <---------postfix needs to be 755 
+
+sudo chmod 644 /etc/passwd   <--------if not can be locked out LightDM Greeter (or other greeters) ... keep at 644 no less 
 sudo chmod 644 /etc/group
+
+sudo chmod 644 /etc/shadow  <-----shadow needs 644 permissions if you used shadow when setting up passwords if less than 644 you will not be able to login at the lock screen (click swith user to log back in) 
 
 
 sudo chmod 640 /etc/passwd-
@@ -603,7 +608,7 @@ hmod 755 /usr/bin/gcc
 hmod 755 /usr/bin/*c++
 hmod 755 /usr/bin/*g++
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-## block ceratin modules unwanted networking protocols and file types from being installed and or used 
+## block ceratin modules - antique networking protocols and file types from being installed and or used 
 
 sudo touch /etc/modprobe.d/blacklist.conf
 
@@ -681,11 +686,11 @@ Next edit the config file:
 
 sudoedit /etc/systemd/resolved.conf
 
-next to #DNS remove the # sign and then type 1.1.1.1 (see below)
+next to #DNS remove the # sign (uncomment) and then type 1.1.1.1 (see below)
 
 next to #DNSSEC remove # sign and type yes after thus removing the existing "no" (see below)
 
-lastly scroll down a little and you'll see #DNSOverTLS=yes remove # sign and make sure it reads "yes" so that it ends up all looking like this:
+lastly scroll down a little and you'll see #DNSOverTLS=yes remove # sign (uncomment) and make sure it reads "yes" so that it ends up all looking like this:
 
 ********************************************************
 
@@ -715,7 +720,7 @@ sudo apt update && sudo apt install logwatch auditd rkhunter chkrootkit yasat ly
 (gnome-logs is handy to have to quickly spot problems in the Journal) or type in terminal:  journalctl | grep failed  &  journalctl | grep error
 
 
-#Yasat is a easy auditing tool I use to check permissions and couple other plugins all depends on what your device is set up with ...
+#Yasat - is a easy auditing tool I use to check permissions and couple other plugins all depends on what your device is set up with ...
 
 To use Yasat just type: sudo yasat -l <------this list the plugins pick one and then type:
 
@@ -725,7 +730,7 @@ That's it let it complete and look over see what it finds...
 
 
 
-#Lynis also a auditing program (good idea to download from their website so you have the latest version) 
+#Lynis - also a auditing program (good idea to download from their website so you have the latest version) 
 
 https://cisofy.com/downloads/lynis/
 
@@ -735,7 +740,7 @@ After audit completes view all suggestions and warnings by typing in terminal:  
 
 
 
-#fcheck is used for integrity like aide or tiger it can be used as a IDS detect modifications (new links added or removed-permissons altered -added deleted files and or directories added or removed) to your files and folders ~
+#fcheck - is used for integrity like aide or tiger it can be used as a IDS detect modifications (new links added or removed-permissons altered -added deleted files and or directories added or removed) to your files and folders ~
 
 *note some users like to add a file named like MyPasswords or something to entice a intruder into viewing or deleting :) then adding to the files to be watched be sure and go to the config file of fcheck (etc/fcheck) and either add or remove watched files and or directories...
 
@@ -751,7 +756,7 @@ One other thing any updates you install or software you'll need to run the datab
 
 
 
-#rtkhunter root kit scan & more to begin using :
+#rtkhunter - root kit scan & more to begin using :
 
 sudo rkhunter --propupd 
 
@@ -760,7 +765,7 @@ Then to scan system:
 rkhunter --check --sk
 
 
-#chkrootkit similar to above but much smaller and fewer options 
+#chkrootkit - similar to above but much smaller and fewer options 
 
 Look for suspicious strings:
 
@@ -768,7 +773,7 @@ sudo chkrootkit -x | less
 
 Run scan:
 
-sudo chkrootkit
+sudo chkrootkit > scan   <-----perform a scan and send the output to a file in your home directory nammed scan to look over soon as scan completes
 
 
 
@@ -778,7 +783,7 @@ sudo logwatch --range All --archives --detail Med
 
 sudo logwatch | less
 
-logwatch –mailto [email protected] –range All 
+logwatch –mailto [yourEmailAddress] –range All 
 
 
 
@@ -791,7 +796,7 @@ logwatch –mailto [email protected] –range All
 
 after some rules have been added in the future to check them :
 
-sudo ausearch -f PATH (example sudo ausearch -f /home/stv/Passwords) or sudo ausearch -f passwd
+sudo ausearch -f pathOfFileOrFolder
 
 sudo service auditd rotate
 
@@ -877,7 +882,7 @@ https://obscurix.github.io/security/other-security-features.html
 
 # Method 5
 
-perl -npe 's/umask\s+0\d2/umask 077/g' -i /etc/bashrc
+perl -npe 's/umask\s+0\d2/umask 077/g' -i /etc/bash.bashrc
 
 regardless which used always check after reboot to see if it's sticking by issuing: umask    command in terminal
 
@@ -1056,12 +1061,11 @@ Next lets edit it:
 
 sudo nano /usr/lib/modules-load.d/jitterentropy.conf
 
-copy/paste into file and close Ctrl X and lastly save press Y then Enter:
+copy/paste into file: jitterentropy_rng     
 
-jitterentropy_rng
+Then close Ctrl X and lastly save press Y then Enter:
 
-
-Now reboot and they'll begin working away creating randomness
+Now reboot and they'll begin working creating randomness
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Kick any idle users off just for the sake of security in general after 10 minutes:
 
@@ -1185,11 +1189,19 @@ journalctl | grep ntpsec
 
 Then we'll see if our new network time secure peers are up and working type into terminal:
 
-ntpq -p  (the t column is the cookie count and should read 8 if none have been lost) 
+ntpq -p  <----- the t column is the cookie count and should read 8 if none have been lost - st column is stratum how close or far the clock is to an atomic clock (the main clock) - offset the difference between your time and the time that's retrieved - delay round trip time - jitter less is better 
 
 ntpq -c nts
 
-Also we can use this command to check it: 
+ntpq -c rv                 Visit: https://docs.ntpsec.org/latest/ntpq.html for the list of commands 
+
+ntpq -c sysinfo
+
+ntpq -c apeers
+
+ntpq -c peers
+
+Also we can use this command to check it's enabled - functioing: 
 
 sudo systemctl status ntp
 
@@ -1198,7 +1210,6 @@ This will list the clients we have listed in the config if all is well :)
 Lastly be sure and turn off any other clocks such as timesyncd : sudo systemctl disable timesyncd.service
 
 https://www.netnod.se/netnod-time/how-to-use-nts
-https://docs.ntpsec.org/latest/NTS-QuickStart.html#client
 https://www.ntpsec.org/
 https://www.netnod.se/blog/what-network-time-security-and-why-it-important
 https://datatracker.ietf.org/meeting/106/materials/slides-106-ntp-nts-deployment-03.pdf <------list port numbers and most NTS servers
