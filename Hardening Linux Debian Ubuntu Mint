@@ -584,7 +584,6 @@ sudo chmod 600 /var/log/faillog
 sudo chmod 600 /etc/security
 sudo chmod 600 /etc/crontab
 sudo chmod 600 /etc/anacrontab
-sudo chmod 600 /etc/shadow
 
 sudo chmod 400 /etc/gshadow
 
