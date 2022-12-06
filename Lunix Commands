@@ -1,4 +1,11 @@
+## Check permissions of a file: ls -l filePath
 
+## Check permissions of a directory: ls -ld directoryPath
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+## Postfix Mail sometimes needs to be reconfigured to work properly: sudo dpkg-reconfigure postfix
+
+also its permissions need to be 755: sudo chmod -R 755 /etc/postfix 
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Compiling a .tar 
 
 #extract the .tar
