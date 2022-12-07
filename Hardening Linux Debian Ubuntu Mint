@@ -1380,6 +1380,38 @@ for i in $(find /lib/modules/`uname -r`/kernel/drivers/net/wireless -name "*.ko"
 
 That searches for wireless kernel drivers then adds them to a newly created blacklist in /etc/modprobe.d  Be sure to run command every kernel update as they can add new wireless drivers and or update existing 
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+## Secure postfix
+
+first check for errors: sudo postconf 1> /dev/null
+
+If errors are found they'll be returned to reconfigure type in terminal: sudo dpkg-reconfigure postfix
+
+Many times the permissions maybe off to fix type in terminal: sudo chmod -R 755 /etc/postfix
+
+Then secure the config files: sudo chmod 644 /etc/postfix/*.cf 
+
+Lastly secure mail log: sudo chown root:root /var/log/mail*
+sudo chmod 600 /var/log/mail*
+
+Moving on disable vrfy: sudo postconf -e disable_vrfy_command=yes
+
+Next only allow postfix to listen on loopback interface: sudo postconf -e inet_interfaces=loopback-only
+
+Then check one of the three commands: netstat -tanp | grep LISTEN 
+netstat -tulpn
+ss -tulpn 
+
+Can also scan with nmap:  nmap -v -sT localhost
+
+Should see 25/tcp open on 127.0.0.1 (localhost only) 
+
+Enable HELO: sudo postconf -e smtpd_helo_required=yes
+
+Be sure and setup email addresses in aliases /etc/aliases for root especially then run in terminal: newaliases command
+
+for more settings see: https://linux-audit.com/postfix-hardening-guide-for-security-and-privacy/ & https://bookofzeus.com/harden-ubuntu/software/secure-postfix/
+--------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
