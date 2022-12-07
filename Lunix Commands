@@ -5,6 +5,8 @@
 ## Postfix Mail sometimes needs to be reconfigured to work properly: sudo dpkg-reconfigure postfix
 
 also its permissions need to be 755: sudo chmod -R 755 /etc/postfix 
+
+then secure the config files: sudo chmod 644 /etc/postfix/*.cf 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Compiling a .tar 
 
