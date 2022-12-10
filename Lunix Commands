@@ -1,3 +1,23 @@
+## Compile a Kernel
+
+# cd /usr/src/linux
+
+# make mrproper <--------Clean everything, including config files
+
+# make oldconfig   <----Reuse the old .config if existent
+
+# make menuconfig <-----or xconfig (Qt) or gconfig (GTK)
+
+# make <-------Create a compressed kernel image
+
+# make modules <-----Compile the modules
+
+# make modules_install <-----Install the modules
+
+# make install <-------Install the kernel
+
+# reboot
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Check permissions of a file: ls -l filePath
 
 ## Check permissions of a directory: ls -ld directoryPath
