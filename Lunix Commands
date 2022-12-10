@@ -118,15 +118,93 @@ press "u" then enter user name to list only processces for that user
 sudo apt install nmon (you'll likely like it better) or btop 
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
-##find something then delete it:
+## Find & Delete files and or directories
 
-sudo find / -iname nameHere -exec rm {} \;
+*notes:
 
-## Debian goodies cmds ~
+find
 
-check-enhancements
-which-pkg-broke
-dpigs
+The find command used to search for files
+
+. (Dot) 
+
+The dot after the find command specifies that the operation must be done within the current directory
+
+-type f
+
+This option specifies what files we want to find. In case you want to search the directories, replace the f with a d
+
+-name
+
+This is the option to specify the file/directory target. This option must be typed before the file/directory name to define it
+
+-delete 
+
+This option instructs the find command to delete the found files
+
+-exec 
+
+Instructs to execute a posterior command after the first command (find) execution
+
+rm -rf 
+
+This command is used to force the removal of files and directories matching the given names
+
+{} 
+
+This is the find command placeholder, which means that it takes the file or directory names given to the find command to run the given command (After -exec)
+
+\;
+
+The back slash and the semicolon closes or finishes the –exec
+
+
+
+
+# find files less than 5 megabytes & delete them 
+
+sudo find /var/log -type f -size -5M -exec rm {} +
+
+
+#find files larger than 1 gigabyte & delete
+
+find /var/log -type f -size +1G -exec rm {} +
+
+
+# remove all files of a certain extension
+
+find <ParentDirectory> -type f -name '*.<Extension>' -print -delete
+
+find <ParentDirectory> -type f -name '*.<Extension>' -exec rm -f {} \;
+
+find <ParentDirectory> -name "*.<FileExtension>" -print0 | xargs -0 rm
+
+
+# find and delete all files created and or modified in the past 24hrs 
+
+find <Directory> -type f -mtime -1 -delete
+
+
+# simply find a file or files and delete them by name
+
+sudo find / -type f -name nameHere -exec rm {} \;
+
+sudo find / -type f -name nameHere -print -delete
+
+
+# find a directory & delete 
+
+sudo find / -type d -name nameHere -print -delete
+
+
+# find files ONLY in current directory & delete
+
+find . -type f -name nameHere -delete
+
+
+# find a directory & delete ONLY in the current directory
+
+find . -type f -name "file*" -delete
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 ## redirect all DNS queries to 1.1.1.1
 
