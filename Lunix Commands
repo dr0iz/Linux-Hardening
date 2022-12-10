@@ -95,9 +95,6 @@ systemctl list-units --type=service --state=failed  or simply type:  systemctl -
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
 ## see what shared libraries a program uses and their location
 
 ldd /pathOfProgram
