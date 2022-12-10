@@ -60,7 +60,44 @@ program will run correctly
 make install
 
 That's all :) test program ...
----------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+## Using Service & Systemctl -
+
+ACTION	                                      COMMAND
+Check service status	                   sudo systemctl status <Service-Name>
+Stop a service	                         sudo systemctl stop <Service-Name>
+Disable a service	                      sudo systemctl disable <Service-Name>
+Start a service	                        sudo systemctl start <Service-Name>
+Enable a service	                       sudo systemctl enable <Service-Name>
+Reload a service	                       sudo systemctl reload <Service-Name>
+Restart a service	                      sudo systemctl restart <Service-Name>
+
+
+ACTION	                                        COMMAND
+Check service status	                   sudo service <Service-Name> status
+Stop a service	                         sudo service <Service-Name> stop
+Start a service	                        sudo service <Service-Name> start
+Reload a service	                       sudo service <Service-Name> reload
+Restart a service	                      sudo service <Service-Name> –full-restart
+
+
+systemctl enable --now (service)        <----does not wait for reboot 
+
+systemctl list-unit-files --type=service --state=enabled
+
+systemctl list-unit-files --type=service --state=disabled
+
+systemctl list-unit-files --type=service --state=enabled,disabled
+
+systemctl list-units --type=service --state=running
+
+systemctl list-units --type=service --state=failed  or simply type:  systemctl --failed
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 ## see what shared libraries a program uses and their location
 
 ldd /pathOfProgram
@@ -78,6 +115,10 @@ Shift+M
 press "?" to get a list of cmds 
 
 press "f" for sorting the various fields 
+
+press "u" then enter user name to list only processces for that user
+
+sudo apt install nmon (you'll likely like it better) or btop 
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 ##find something then delete it:
@@ -471,20 +512,6 @@ sudo aa-status (apparmor info)
 ps auxZ | grep -v '^unconfined'
 
 sudo grub-mkconfig -o /boot/grub/grub.cfg   (install microcode for amd-intel)
-
-systemctl status (service)
-
-systemctl enable --now (service)
-
-systemctl list-unit-files --type=service --state=enabled
-
-systemctl list-unit-files --type=service --state=disabled
-
-systemctl list-unit-files --type=service --state=enabled,disabled
-
-systemctl list-units --type=service --state=running
-
-systemctl list-units --type=service --state=failed
 
 ps -aux
 
