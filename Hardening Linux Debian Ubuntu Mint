@@ -1414,13 +1414,13 @@ for more settings see: https://linux-audit.com/postfix-hardening-guide-for-secur
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Software everyone has their own favorite but if you do not:
 
-Email: Tutanota Email it's secure encrypted open source and has a free version with a good calendar - https://tutanota.com/
+Email: Tutanota Email it's secure encrypted open source and has a free version with a hell of a good calendar that's not overly complicated - https://tutanota.com/
 
 Browser: Chromium:  sudo apt install chromium     It's quick, pretty secure and also open source
 
 Backup: Deja-dup why because it's simple to use and lets you backup more than just your /home folder plus restoring is just as simple in case of emergency 
 
-Cloud Storage (backup): Filen: located here: https://filen.io/ It's secure private and easy to use on both mobile phones and your Linux desktop and or laptop 
+Cloud Storage (backup): Filen: located here: https://filen.io/ It's secure (client-side encryption) private and easy to use on both mobile phones and your Linux desktop and or laptop plus comes with a free 10 GB 
 
 Cleaner: stick with Stacer as it doesn't delete things that could cause issues like some others do
 
