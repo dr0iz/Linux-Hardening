@@ -17,7 +17,35 @@
 # make install <-------Install the kernel
 
 # reboot
----------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+## Common dpkg command usage
+
+sudo dpkg -i package.deb   (installs package)
+
+sudo dpkg -c package.deb   (list package contents)
+
+sudo dpkg -I package.deb   (extracts package info.)
+
+sudo dpkg -r package   (removes an installed package named package)
+
+sudo dpkg -P package   (purges an installed package named package)
+
+*note: The difference between remove and purge is that while remove only deletes data and executables, purge also deletes all configuration files in addition
+
+sudo dpkg -L package   (list all files insatlled by package)
+
+sudo dpkg -s package   (shows info. on the installed package)
+
+sudo dpkg-reconfigure package   (reconfigures an installed package)
+
+sudo dpkg -S file   (searches for file in package database, telling you which installed packages have that file in them)
+
+sudo dpkg --get-selections package   (get current status of package)
+
+sudo dpkg --configure --pending   (try and fix depenencies error by configuring packages that have already been unpacked) after then try:
+apt-get install -f    apt-get upgrade -f    apt-get dist-upgrade -f
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Check permissions of a file: ls -l filePath
 
 ## Check permissions of a directory: ls -ld directoryPath
@@ -236,64 +264,89 @@ or don't output the file and edit it in place using the "i" switch:
 sed -n '45p' file.txt
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
-# check mitigations are enabled or not 
+# Check your cpu see if vunerable to any exploits or are they being mitigated:
 
 fgrep -r '' /sys/devices/system/cpu/vulnerabilities
 
 grep -H '' /sys/devices/system/cpu/vulnerabilities/*
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+# A few different ways to find out what's listening for incoming connections if anything:
 
-netstat -tanp | grep LISTEN
+netstat -tanp | grep LISTEN (works best with sudo as it provides more info.)
 
-# make sure all world writable directories have sticly bit set :
+netstat -tulpn (listening ports)
+
+ss -tulpn
+
+nmap -v -sT localhost  (open port scan)
+
+sudo nmap -v -sS localhost  (SYN scan)
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+# make sure all world writable directories have sticly bit set:
+
 find PART -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print
+
 (if found then add the sticky bit): chmod +t /dir
+
+
+# Find world readable log files:
+
+find /var/log -perm -o=r ! -type l
+
+fix readable files in /var/log: sudo chmod -R 640 /var/log/
 
 
 # Find Unauthorized World-Writable Files
 
-find PART -xdev -type f -perm -0002 -print
+find / -xdev -type f -perm -0002 -print 
 
-if found fix by: chmod o-w fileName
+find / -path /proc -prune -o -perm -2 ! -type l -ls
+
+if found fix by typing in terminal: sudo chmod o-w fileName
 
 
-# Unauthorized SUID/SGID System Executables
+# Two ways to find Unauthorized SUID/SGID System Executables
 
 find PART -xdev \( -perm -4000 -o -perm -2000 \) -type f -print
+
+find / -xdev -user root \( -perm -4000 -o -perm -2000 \)
 
 if found fix: chmod -s file
 
 
-# find and repair any Unowned files
+# Two ways to find Unowned orphan files 
 
 find PART -xdev \( -nouser -o -nogroup \) -print
+
+find / -path /proc -prune -o -nouser -o -nogroup
+
 
 # Verify that All World-Writable Directories Have Proper Ownership
 
 find PART -xdev -type d -perm -0002 -uid +500 -print
 
 
-To see active accounts, run:
+# Print to screen any files in users home that have changed in the past 10 minutes 
 
-cat /etc/passwd | egrep -v '\/false|\/nologin|\/shutdown|\/halt'
-
-You can disable account using this command:
-
-usermod -s /usr/sbin/nologin "username"       (without quotes)
+find /home/userName/ -cmin 10 -print (files changed in past 10 min) 
 
 
-
-find /home/stvn/ -cmin 10 -print (files changed in past 10 min) 
+# List .tar packages that are larger than 100 megabytes 
 
 find / -type f -name *.tar.gz -size +100M -exec ls -l {} \;
 
-logwatch --range All --archives --detail Med
+
+# Delete any tmp files older than 24hrs:
+
+find /tmp -type f \( ! -user root \) -atime +1 -print -delete
 
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------
 sudo fstrim -av   (performs a Trim on Disk)
 
 rm -rfv ~/.cache/thumbnails  (deletes thumbmails)
 
----------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------
 sudo ausearch -f PATH (example sudo ausearch -f /home/stv/Passwords) or sudo ausearch -f passwd
 
 sudo service auditd rotate
@@ -312,23 +365,20 @@ To review what executables are doing:
 ausearch --key access --raw
 
 aureport -x --summary
----------------------------------------------------------------------------------------------------------------------------------------------------------
-sudo dpkg -i packageName  (installs package)
+-------------------------------------------------------------------------------------------------------------------------------------------------------
 
+To see active accounts, run:
 
-netstat -tulpn (listening ports)
-ss -tulpn
+cat /etc/passwd | egrep -v '\/false|\/nologin|\/shutdown|\/halt'
+
+You can disable account using this command:
+
+usermod -s /usr/sbin/nologin "username"       (without quotes)
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 kill PID
 killall -9 program_name
-
-nmap -v -sT localhost  (open port scan)
-sudo nmap -v -sS localhost  (SYN scan)
-
-df -h (disk file sys info)
-
-systemctl list-units | grep service
-
 
 https://www.jaiminton.com/cheatsheet/DFIR/#linux-cheat-sheet
 
@@ -404,6 +454,7 @@ iptables -L
 
 Network Configuration
 ifconfig -a
+ip a
 
 Browser Plugin Information
 ls -la ~/.mozilla/plugins
@@ -424,43 +475,11 @@ ps -m
 ps -a
 top
 
-Search files recursively in directory for keyword
-grep -H -i -r "password" /
-
 Process Tree
 ps -auxwf
 
-Open Files and space usage
-lsof
-du
-
-Pluggable Authentication Modules (PAM)
-cat /etc/pam.d/sudo
-cat /etc/pam.conf
-ls /etc/pam.d/
-
-Disk / Partition Information
-fdisk -l
-
-System Calls / Network Traffic
-strace -f -e trace=network -s 10000 <PROCESS WITH ARGUMENTS>;
-strace -f -e trace=network -s 10000 -p <PID>;
-
 Detailed Process Information
 ls -al /proc/[PID]
-
-CWD = Current Working Directory of Malware
-EXE = Binary location and whether it has been deleted
-Most Common Timestamp = When process was created
-Recover deleted binary which is currently running
-
-cp /proc/[PID]/exe /[destination]/[binaryname]
-Capture Binary Data for Review
-cp /proc/[PID]/ /[destination]/[PID]/
-
-Binary hash information
-sha1sum /[destination]/[binaryname]
-md5sum /[destination]/[binaryname]
 
 Process Command Line Information
 cat /proc/[PID]/cmdline
@@ -489,8 +508,37 @@ ls -alr /proc/*/cwd 2> /dev/null | grep dev
 ls -alr /proc/*/cwd 2> /dev/null | grep var
 ls -alr /proc/*/cwd 2> /dev/null | grep home
 
-Hidden Directories and Files
-s
+Search files recursively in directory for keyword
+grep -H -i -r "password" /
+
+Open Files and space usage
+lsof
+du
+
+Pluggable Authentication Modules (PAM)
+cat /etc/pam.d/sudo
+cat /etc/pam.conf
+ls /etc/pam.d/
+
+Disk / Partition Information
+sudo fdisk -l
+
+System Calls / Network Traffic
+strace -f -e trace=network -s 10000 <PROCESS WITH ARGUMENTS>;
+strace -f -e trace=network -s 10000 -p <PID>;
+
+CWD = Current Working Directory of Malware
+EXE = Binary location and whether it has been deleted
+Most Common Timestamp = When process was created
+Recover deleted binary which is currently running
+
+cp /proc/[PID]/exe /[destination]/[binaryname]
+Capture Binary Data for Review
+cp /proc/[PID]/ /[destination]/[PID]/
+
+Binary hash information
+sha1sum /[destination]/[binaryname]
+md5sum /[destination]/[binaryname]
 
 Immutable Files and Directories (Often Suspicious)
 lsattr / -R 2> /dev/null | grep "\----i"
@@ -580,7 +628,7 @@ sudo apt update && apt upgrade -y && apt dist-upgrade -y && reboot
 
 grep MemTotal /proc/meminfo
 
-ip -a
+ip a
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 sudo aa-status (apparmor info)
 
@@ -603,9 +651,7 @@ netstat -at
 cat /etc/crontab
 ls /etc/cron.*
 crontab –u root –l
----------------------------------------------------------------------------------------------------------------------------------------------------------
-find /tmp -type f \( ! -user root \) -atime +1 -delete
-
+-------------------------------------------------------------------------------------------------------------------------------------------------------
 # check mitigations are enabled or not 
 
 fgrep -r '' /sys/devices/system/cpu/vulnerabilities
