@@ -83,8 +83,7 @@ tmpfs /home/userName/.cache tmpfs rw,size=600M,noexec,noatime,nodev,uid=userName
 
 #End              https://book.hashbang.sh/docs/security/linux_hardening/
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-
-##work for gov and or mil and or have sensitive data that one could try forcing you to get to then install cryptsetup-nuke-password:
+## Work for gov and or mil and or have sensitive data that one could try forcing you to get to then install cryptsetup-nuke-password:
 
 This provides a relatively stealth way to make your data unreadable in case of emergency
 
