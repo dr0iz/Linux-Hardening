@@ -21,7 +21,7 @@ Linux Command Notes:
 
 # reboot
 -------------------------------------------------------------------------------------------------------------------------------------------------------
-## Common dpkg command usage
+## Common dpkg command usage and apt
 
 sudo dpkg -i package.deb   (installs package)
 
@@ -48,6 +48,34 @@ sudo dpkg --get-selections package   (get current status of package)
 sudo dpkg --configure --pending   (try and fix depenencies error by configuring packages that have already been unpacked) after then try:
 apt-get install -f    apt-get upgrade -f    apt-get dist-upgrade -f
 
+*note:that apt-get install -f does not require a <package> argument 
+
+apt-get install package or apt install package   (Downloads package and all of its dependencies, and installs or upgrades them)
+
+apt-get remove [--purge] package   (Removes package and any packages that depend on it --purge specifies that packages should be purged)
+
+apt-get update   (Updates packages listings from Debian mirrors, should be run at least once a day if you install anything that day, and every time after /etc/apt/sources.list is changed)
+
+apt-get upgrade [-u] (Upgrades all packages installed to newest versions available. Will not install new or remove old packages -u to see what packages are to be upgraded)
+
+apt-get dist-upgrade [-u]   (Similar to apt-get upgrade, except that dist-upgrade will install or remove packages to satisfy dependencies)
+
+apt-cache search <pattern>   (Searches packages and descriptions for <pattern>.)
+
+apt-cache show package   (Shows the full description of package)
+
+apt-cache showpkg package   (Shows a lot more detail about <package>, and its relationships to other packages)
+
+
+# Building Debian packages from Source
+
+apt-get source [-b] <package>    (Download the source Debian package for <package> and extract it. You must have deb-src lines in your /etc/apt/sources.list for this to work. If you supply the `-b' option and you are currently root, then the package will be automatically built if possible)
+
+apt-get build-dep <package>   (Download and install the packages necessary to build the source Debian package <package>. This feature is only present in apt version 0.5 and up. Currently this means that woody and above contain this functionality. If you have an older version of apt then the easiest way to find out the build dependencies is to look in the debian/control file in the source package directory) A common usage of this command is in conjunction with apt-get source -b. For example (as root):
+                                                apt-get build-dep <package>
+Will download the source package, all of its build dependencies, and attempt to compile the source package.                                                apt-get source -b <package>   
+
+ credits- Matthew Danish
 -------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Check permissions of a file: ls -l filePath
 
@@ -59,7 +87,7 @@ also its permissions need to be 755: sudo chmod -R 755 /etc/postfix
 
 then secure the config files: sudo chmod 644 /etc/postfix/*.cf 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
-## Compiling a .tar 
+## Compiling a .tar -
 
 #extract the .tar
 
@@ -92,7 +120,7 @@ make install
 
 That's all :) test program ...
 -------------------------------------------------------------------------------------------------------------------------------------------------------
-## Using Service & Systemctl -
+## Service & Systemctl commands -
 
 ACTION	                                      COMMAND
 Check service status	                   sudo systemctl status <Service-Name>
@@ -123,8 +151,6 @@ systemctl list-unit-files --type=service --state=enabled,disabled
 systemctl list-units --type=service --state=running
 
 systemctl list-units --type=service --state=failed  or simply type:  systemctl --failed
-
-
 -------------------------------------------------------------------------------------------------------------------------------------------------------
 ## see what shared libraries a program uses and their location
 
@@ -248,11 +274,11 @@ iptables -t nat -D OUTPUT -p tcp --dport 53 -j DNAT --to-destination 1.1.1.1
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 Look for suspicious strings:
 
-$ sudo chkrootkit -x | less
+sudo chkrootkit -x | less
 
-rkhunter --propupd
+rkhunter --propupd     <------prepare rkhunter 
 
-rkhunter --check --sk
+rkhunter --check --sk      <------scan computer searching for rootkits
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 ## use the "sed" command for ex. remove hello world from a file:
 
@@ -350,10 +376,9 @@ sudo fstrim -av   (performs a Trim on Disk)
 rm -rfv ~/.cache/thumbnails  (deletes thumbmails)
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------
-sudo ausearch -f PATH (example sudo ausearch -f /home/stv/Passwords) or sudo ausearch -f passwd
+sudo ausearch -f PATH (example sudo ausearch -f /home/userName/Passwords) or sudo ausearch -f passwd
 
-sudo service auditd rotate
-
+sudo service auditd rotate  <-----rotate audit logs
 
 aureport -l -i -ts yesterday -te today
 
@@ -440,6 +465,7 @@ ls /etc/*.d
 cat /etc/*.d/*
 
 Network Connections / Socket Stats
+netstat -tanp | grep LISTEN <------use with sudo for more info.
 netstat
 netstat -apetul
 netstat -plan
@@ -660,12 +686,6 @@ crontab –u root –l
 fgrep -r '' /sys/devices/system/cpu/vulnerabilities
 
 grep -H '' /sys/devices/system/cpu/vulnerabilities/*
-
-
-rkhunter --check --sk (scan computer)
-
-
-netstat -tanp | grep LISTEN
 
 # make sure all world writable directories have sticly bit set :
 find PART -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print
