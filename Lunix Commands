@@ -151,6 +151,8 @@ systemctl list-unit-files --type=service --state=enabled,disabled
 systemctl list-units --type=service --state=running
 
 systemctl list-units --type=service --state=failed  or simply type:  systemctl --failed
+
+systemd-cgls
 -------------------------------------------------------------------------------------------------------------------------------------------------------
 ## see what shared libraries a program uses and their location
 
