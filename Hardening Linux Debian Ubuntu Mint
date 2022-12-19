@@ -1280,23 +1280,21 @@ sudoedit /etc/systemd/system/rfkill.service
 Copy & Paste:
 
 [Unit]
-
 Description=Rfkill Service
-
+After=network-online.target
+Wants=network-online.target
 [Service]
-
 ExecStart=/opt/rfkill.sh
 Type=oneshot
 
 [Install]
-
 WantedBy=multi-user.target
 
 Close it with Ctrl+x Press Y then Press Enter then type:
 
 sudo systemctl enable rfkill
 
-That’s all! Just reboot and check it ran by typing into Terminal: systemctl status rfkill 
+That’s it. Just reboot and check it ran by typing into Terminal: systemctl status rfkill 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Change mac address at every boot service  https://theprivacyguide1.github.io/linux_hardening_guide#mac_address
 
