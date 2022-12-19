@@ -1409,6 +1409,9 @@ Enable HELO: sudo postconf -e smtpd_helo_required=yes
 
 Be sure and setup email addresses in aliases /etc/aliases for root especially then run in terminal: newaliases command
 
+Verify postfix is not accepting connections from the outside by using another host(can't be the same computer) type: nmap -sT -p 25 REMOTE_HOST  or 
+telnet <remote_host> 25
+
 for more settings see: https://linux-audit.com/postfix-hardening-guide-for-security-and-privacy/ & https://bookofzeus.com/harden-ubuntu/software/secure-postfix/
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Software everyone has their own favorite but if you do not:
