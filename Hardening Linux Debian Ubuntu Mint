@@ -1227,6 +1227,12 @@ In case of emergency type: sudo encryptfs-recover-private      this will decrypt
 
 ## logs:
 
+First set up Journal to keep some logs:  sudo mkdir -p /var/log/journal
+
+Next add yourself to the admin account to view all logs: sudo usermod -a -G adm yourUserName
+
+Then just reboot to take effect. Make use of grep and find any log: 
+
 journalctl | grep errors
 
 journalctl | grep critical
@@ -1258,12 +1264,10 @@ sudo touch /opt/rfkill.sh && sudoedit /opt/rfkill.sh
 Once it’s opened copy and paste:
 
 #!/bin/sh
-
 sleep 20
-
 rfkill block all
-
 exit 0
+
 
 Then close using Ctrl+x Press Y then Press Enter
 
