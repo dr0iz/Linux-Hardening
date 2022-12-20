@@ -562,7 +562,7 @@ sudo chmod 750 /var/log/openvpn
 sudo chmod -R o-rxw /etc/snmp
 sudo chmod -R o-rxw /etc/apache2
 
-sudo chmod -R 755 /etc/postfix   <---------postfix needs to be 755 
+sudo chmod -R 755 /etc/postfix   <---------postfix needs to be 755 besides its config files
 
 sudo chmod 644 /etc/passwd   <--------if not can be locked out LightDM Greeter (or other greeters) ... keep at 644 no less 
 sudo chmod 644 /etc/group
@@ -1227,7 +1227,7 @@ In case of emergency type: sudo encryptfs-recover-private      this will decrypt
 
 ## logs:
 
-First set up Journal to keep some logs:  sudo mkdir -p /var/log/journal
+First set up Journal to keep some persistant logs:  sudo mkdir -p /var/log/journal
 
 Next add yourself to the admin account to view all logs: sudo usermod -a -G adm yourUserName
 
@@ -1244,6 +1244,12 @@ journalctl | grep failed
 journalctl | grep debug
 
 journalctl | grep info
+
+To view logs since recent boot type: journalctl -b
+
+To view only errors since boot type: journalctl -b -p err
+
+To view in realtime (similair to tail) + the last 10 messages type: journalctl -f
 
 sudo cat /var/log/kern.log | grep DENIED
 
