@@ -730,4 +730,27 @@ su - henry -c "mail -F bigboss"
 
 userdel -r henry
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
+## Journal logs
+
+first add yourself to the adm group like so:  sudo usermod -a -G adm yourUserName 
+
+can also type: sudo adduser yourUsername adm
+
+afterwards set up a folder to begin acuumulating persistant logs: sudo mkdir -p /var/log/journal
+
+to see logs since most recent boot: journalctl -b
+
+to view logs in realtime + its last 10 messages type: journalctl -f
+
+then there is a command that will show only errors since boot: journalctl -b -p err
+
+any others just use grep Example: journalctl | grep Warning
+
+journalctl | grep info
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
 
