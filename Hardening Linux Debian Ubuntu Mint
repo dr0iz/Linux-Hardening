@@ -107,24 +107,43 @@ sudo adduser "$USER" systemd-journal
 
 sudo adduser "$USER" sudo
 
-sudo usermod johnDoe -G sudo -a   <------------For existing user
+sudo useradd -m -s /bin/bash bob -g sudo   <----------At creation time
 
-sudo useradd -m -s /bin/bash johnDoe -g sudo   <----------At creation time
+## useradd options: 
+
+Option                                Description
+-c comment                    The new user’s password file comment field.
+-d homedir                    The user’s home directory.
+-g initial group              The group name or number of the user’s initial login group.
+-G group1,group2              A list of additional groups of which the user is to be a member.
+-m                            Create the user’s home directory if it does not exist.
+-M                            Do not create the user’s home directory.
+-n                            Linux usually creates a group with the same name as the user automatically
+                              when the user is created. This option disables that behavior.
+-r                            You can create a system account (with a UID in the range of system
+                              accounts).
+-p password                   Specifies the user’s password.
+-s shell                      Specifies the shell the user will use.
+-e date                       Specifies the default expiry date
+-f days                       Specifies the number of days after a password has expired before
+                              the account will be disabled
+-b path/to/default/home       Specifies the initial path prefix of a new user’s home directory             
+Example:
+sudo useradd john_doe -m -s /bin/bash -g sudo -G adm,systemd-journal -c 'bob knight'
+
+# Adding Groups
+
+add a new group: sudo groupadd sales
+
+Option                           Description
+-g GID                    Set the GID for the group. This must be a unique number.
+-r                        Creates a system group (with a GID inside the system GID range).
+-f                        Exits if the group already exists
+
+to remove a group type: sudo groupdel sales
 
 
 sudo find / -group johnDoe -exec chgrp newGroup {} \;   (if user changes group then locate all their files from old group and set to the new group)
-
-
-
-## You have normal account w/o sudo and would like to upgrade type in terminal:
-
-Type:  su   then press Enter 
-
-Type in roots passwd and then:
-
-sudo usermod -g sudo yourUserName 
-
-Or type: sudo adduser yourUserName sudo
 
 
 # add yourself to sudoers file type:  sudo visudo 
@@ -137,12 +156,6 @@ Example:
 
 root            ALL=(ALL:ALL) ALL
 yourUserName    ALL=(ALL:ALL) ALL    <------------- like this 
-
-
-# Long method:
-sudo useradd john_doe -m -s /bin/bash -g sudo -G adm,systemd-journal -c 'Johnny Does'
-
-#m to make /home ---- s to set bash ----- g to add to primary group-----G add to secondary groups ----- c for comments like real name or personal info and use quotes if there are any spaces whitespace between words or name single quotes or double doesn't matter...
 -------------------------------------------------------------------------------------------------------------------------------------------------
 ## install firewall then add rules last activate:
 
