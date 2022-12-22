@@ -55,7 +55,7 @@ noexec – Prevents execution of binaries on mounted file systems. This prevents
 nosuid – Disables set-user-identifier or set-group-identifier bits. This prevents remote users from gaining higher privileges by running a setuid program.
 
 nodev – Prevents character and block special devices from being defined, or if they exist, from being used as character and block special devices. This prevents remote users from getting out of chrooted server jails.
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Partition Mount Example:   https://obscurix.github.io/security/mount-options.html
 
 sudoedit /etc/fstab
@@ -82,7 +82,7 @@ tmpfs /dev/shm tmpfs rw,nodev,nosuid,noexec 0 0     <----secure shared memory
 tmpfs /home/userName/.cache tmpfs rw,size=600M,noexec,noatime,nodev,uid=userName,gid=userGroup,mode=700 0 0    <-----load cache in RAM 
 
 #End              https://book.hashbang.sh/docs/security/linux_hardening/
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Work for gov and or mil and or have sensitive data that one could try forcing you to get to then install cryptsetup-nuke-password:
 
 This provides a relatively stealth way to make your data unreadable in case of emergency
@@ -96,7 +96,7 @@ and it'll prompt you for a password and to confirm it. Be certain it is differen
 That's it! 
 
 This will Erase Your LUKS key (private encryption key) when a certain special password is entered (that you made up) at the default unlock prompt if you fear seizure of your data this way the data can never be decrypted
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Adding user: 
 
 #(Existing) Already have account and want to add it to sudo and or admin:
@@ -143,7 +143,7 @@ yourUserName    ALL=(ALL:ALL) ALL    <------------- like this
 sudo useradd john_doe -m -s /bin/bash -g sudo -G adm,systemd-journal -c 'Johnny Does'
 
 #m to make /home ---- s to set bash ----- g to add to primary group-----G add to secondary groups ----- c for comments like real name or personal info and use quotes if there are any spaces whitespace between words or name single quotes or double doesn't matter...
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## install firewall then add rules last activate:
 
 sudo apt install ufw 
@@ -193,13 +193,13 @@ to delete sudo ufw delete (numberGoesHere) or sudo ufw delete deny ssh ...
 
 Of course some will need inbound rules perhaps ssh: sudo ufw allow in 22/tcp or for a server: sudo ufw allow in 443/tcp
 sudo ufw allow in 80/tcp
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## set timesyncd to use cloudflare & apple 
 
 sudo echo "NTP=time.cloudflare.com" | sudo tee -a /etc/systemd/timesyncd.conf
 
 sudo echo "FallbackNTP=time.apple.com" | sudo tee -a /etc/systemd/timesyncd.conf
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Deny all in /etc/hosts.deny
 
 sudoedit /etc/hosts.deny 
@@ -207,7 +207,7 @@ sudoedit /etc/hosts.deny
 #At the bottom remove the # sign beside ALL:PARANOID 
 
 #then save and close 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Disable Services if you are not planning on using:
 
 ## disable cups
@@ -277,7 +277,7 @@ sudo systemctl mask unattended-upgrades
 
 sudo apt purge popularity-contest* whoopsie* bluez* orca* speech-dispatcher* sane-airscan* sane-utils*
 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Install firejail and apparmor   https://pvera.net/posts/apparmor-firejail-sandboxing/
 
 sudo apt update
@@ -320,13 +320,13 @@ sudo nano /etc/default/grub     "splash apparmor=1 lockdown=integrity lsm=lockdo
 sudo aa-status
 
 ps auxZ | grep -v '^unconfined'
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 sudoedit /etc/X11/Xwrapper.config  
 
 then add this:  needs_root_rights = no
 
 Close (Ctrl X and then save press Y lastly exit by pressing Enter)
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Tmp mount in  RAM:
 
 sudo cp -v /usr/share/systemd/tmp.mount /etc/systemd/system/
@@ -336,7 +336,7 @@ sudo systemctl enable tmp.mount
 #reboot 
 
 systemctl status tmp.mount
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Create a tmp & then secure /tmp and /var/tmp:
 
 #Securing /tmp folder
@@ -382,14 +382,14 @@ sudo cp -prf /var/tmpold/* /tmp/
 sudo rm -rf /var/tmpold/
 
 Then reboot      https://bookofzeus.com/harden-ubuntu/server-setup/secure-tmp-var-tmp/
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Disable IRQ Balance, edit /etc/default/irqbalance:
 
 sudo vi /etc/default/irqbalance
 And Change the ENABLED value to 0:
 
 ENABLED=0
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Improve performance
 #Swappiness in the file should be set to 1 Skipping this step may cause both poor performance, whereas setting it to 1 will cause swap to act as an emergency buffer, preventing out-of-memory crashes. You can do this with the following commands:
 
@@ -401,7 +401,7 @@ sudo echo 'vm.swappiness=1' >> /etc/sysctl.conf
 # Improve cache management
 
 sudo echo 'vm.vfs_cache_pressure=50' >> /etc/systemctl.conf
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Secure SWAP
 To prevent the file from being world-readable, you should set up the correct permissions on the swap file:
 
@@ -409,7 +409,7 @@ sudo chown root:root /swapfile
 sudo chmod 0600 /swapfile
 
 Reboot
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Kernel settings placed in grub to apply: https://theprivacyguide1.github.io/linux_hardening_guide#boot_parameters
 
 *note: substitue amd_iommu=on for Intel cpu add: intel_iommu=on
@@ -426,7 +426,7 @@ sudoedit /etc/default/grub
 Then locate GRUB_CMDLINE_LINUX_DEFAULT= and add the following so it looks like:
 
 GRUB_CMDLINE_LINUX_DEFAULT="splash apparmor=1 lockdown=confidentiality lsm=lockdown,yama,apparmor modules.sig_enforce=1 slub_debug=F page_alloc.shuffle=1 init_on_alloc=1 init_on_free=1 slab_nomerge audit=1 amd_iommu=on iommu=pt ipv6.disable=1"
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Set Kernel and Network settings using Sysctl audit with lynis or yasat if yasat: sudo yasat -p network.test and if using lynis: sudo lynis audit system
 
 ## sudoedit /etc/sysctl.conf :
@@ -498,7 +498,7 @@ sudo echo 'settingGoesHere' >> /etc/sysctl.conf
 #Apply new settings:
 
 sudo sysctl -p  (or reboot)
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Only allow root to log in locally and add yourself (username) along with any other users ...
 
 *note if you have more than one user just put a space after yourUserName and simply add the others the same way with their user name
@@ -510,18 +510,18 @@ sudoedit /etc/security/access.conf
 -:ALL EXCEPT root:tty1 yourUserName shutdown sync:LOCAL  <-----optional 
 
 #save and close 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Prevent standard users execute su:
 
 dpkg-statoverride --update --add root adm 4750 /bin/su
 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Set new users to nologin
 
 sudo sed -ie '/^SHELL=/ s/=.*\+/=\/usr\/sbin\/nologin/' /etc/default/useradd
 sudo sed -ie '/^DSHELL=/ s/=.*\+/=\/usr\/sbin\/nologin/' /etc/adduser.conf
 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 # view home permissions 
 
 ls -ld /home/USER 
@@ -535,7 +535,7 @@ chmod o-rwx /home/yourUserName  <-------------removes other read write and execu
 #Remove Others and Groups write permissions from your home folder:
 
 sudo chmod 750 /home/yourUserName  <-------same as above just shorter easier to use 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 # Restrict the permission on all system crontab directories:  (use Yasat plugin for audit if you like: sudo yasat -p system_rights.test)
 
 cd /etc
@@ -605,7 +605,7 @@ hmod 755 /usr/bin/cc
 hmod 755 /usr/bin/gcc
 hmod 755 /usr/bin/*c++
 hmod 755 /usr/bin/*g++
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## block ceratin modules - antique networking protocols and file types from being installed and or used 
 
 sudo touch /etc/modprobe.d/blacklist.conf
@@ -661,7 +661,7 @@ install ipv6 /bin/true
 install usb-storage /bin/true
 
 Save and close 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Install secure DNS that uses HTTPS proxy (can choose between Google or Cloudflare) or use systemd with TLS 
 
 sudo apt install dnss
@@ -675,7 +675,7 @@ sudo dnss -enable_dns_to_https -https_upstream="https://1.1.1.1/dns-query"
 sudo dnss -enable_dns_to_https -https_upstream="https://dns.google/dns-query"
 
 That's it! 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 DNS another method and perhaps the best: Make use of systemd with TLS & DNSSEC just install:
 
 sudo apt install systemd-resolved 
@@ -711,7 +711,7 @@ DNSOverTLS=yes
 afterwards test by visiting this site: https://1.1.1.1/help and look at DNS TLS it should now read Yes
 
 also test DNSSEC http://dnssec-or-not.com/  if all is well then he gives you a thumbs up 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Next add some software security and what not pick and choose ...
 
 sudo apt update && sudo apt install logwatch auditd rkhunter chkrootkit yasat lynis stacer fcheck debsums debsecan gnome-logs
@@ -832,7 +832,7 @@ Set some defaults
 ● Monitor important syscalls
 ● -a exit,always -S open -S openat -F exit=-EPERM
 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Method 1 Change umask settings (file creation permissions) to a more secure setting system wide:
 https://linuxaria.com/article/linux-shell-understanding-umask-with-examples
 
@@ -885,7 +885,7 @@ perl -npe 's/umask\s+0\d2/umask 077/g' -i /etc/bash.bashrc
 regardless which used always check after reboot to see if it's sticking by issuing: umask    command in terminal
 
 *note be cautious and test if using 0077 (equivilant to 700) mask especially if you frequently share files may need to use 0027 (equivilant to 750) instead of 0077 if you start having issues
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## set a root password and then lock root account if you like but if things go wrong and you need to login as root :(
 
 sudo passwd root
@@ -897,7 +897,7 @@ then lock root account if you like:
 sudo passwd root -l 
 
 to unlock: sudo passwd -u
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Set trim to run daily instead of weekly that is default 
 https://easylinuxtipsproject.blogspot.com/p/ssd.html#ID6
 
@@ -920,7 +920,7 @@ OnCalendar=daily
 #reboot and now it will run daily to check it ran in the future just type:
 
 journalctl | grep fstrim.service 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## At and Cron (use Yasat plugin for audit)
 Only allow root and people with verified need to run cron jobs
 Setup cron.allow and cron.deny
@@ -954,7 +954,7 @@ protection
 #Audit with yasat: sudo yasat -p postfix.test
 
 ##NTP Network Time Protocol audit with yasat: sudo yasat -p ntp.test
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 pam_tally2
 ● This is used to lockout an account for consecutive failed login
 attempts
@@ -985,7 +985,7 @@ Limit access to su command
 auth required pam_wheel.so use_uid
 
 dpkg-statoverride --update --add root adm 4750 /bin/su
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Computer has > 4 GB RAM speed things up with zram ~ https://easylinuxtipsproject.blogspot.com/p/speed-mint.html#ID1.2
 
 sudoedit /etc/default/grub
@@ -1044,7 +1044,7 @@ dmesg | grep zswap
 cat /sys/module/zswap/parameters/max_pool_percent
 
 #It should report 20, which is the default, or 40 at the most.
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Install haveged and jitterentropy for better Entropy (random number generation) why? computers use a lot it and it's a bonus to have plenty of it especially with encryption https://hakk.gg/linux-hardening-guide/#entropy
 
 sudo apt install haveged jitterentropy-rngd
@@ -1064,7 +1064,7 @@ copy/paste into file: jitterentropy_rng
 Then close Ctrl X and lastly save press Y then Enter:
 
 Now reboot and they'll begin working creating randomness
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Kick any idle users off just for the sake of security in general after 10 minutes:
 
 sudo touch /etc/profile.d/os-security.sh
@@ -1082,7 +1082,7 @@ sudo chmod +x /etc/profile.d/os-security.sh
 
 
 https://wiki.centos.org/HowTos/OS_Protection
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Lockdown Cron and At ~ so that only root and trusted users may be able to use and no others-this script will do this by creating a cron.allow & cron.deny file inside /etc directory ~
 
 First create a bash script file named lockCron.sh      <--------- (use anything you like for name)  
@@ -1115,7 +1115,7 @@ Now run the script: cd /etc
 sudo ./cronLock.sh 
 
 That's all :) should print in terminal "Locking down Cron" & "Locking down AT"          https://wiki.centos.org/HowTos/OS_Protection
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## GRUB Password Protect
 
 To set a password for GRUB issue in terminal:
@@ -1138,7 +1138,7 @@ Regenerate your configuration file with
 grub-mkconfig /boot/grub/grub.cfg
 
 GRUB will now be password protected.
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Use NTS Network Time Secure instead of regular insecure NTP 
 
 *note NTS key exchange: Establishes the necessary key material between the NTP client and the server, using a Transport Layer Security (TLS) handshake
@@ -1211,7 +1211,7 @@ https://www.netnod.se/netnod-time/how-to-use-nts
 https://www.ntpsec.org/
 https://www.netnod.se/blog/what-network-time-security-and-why-it-important
 https://datatracker.ietf.org/meeting/106/materials/slides-106-ntp-nts-deployment-03.pdf <------list port numbers and most NTS servers
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Set up a private - secure encrypted directory for whatever passwords ... logins 
 
 sudo apt install encryptfs-utils
@@ -1223,8 +1223,7 @@ sudo ecryptfs-setup-private
 It'll prompt you for a password and then create a mount passphrase be sure not to forget :) Reboot then any files written in ~/Private (/home/Private) will be encrypted 
 
 In case of emergency type: sudo encryptfs-recover-private      this will decrypt the data 
---------------------------------------------------------------------------------------------------------------------------------------------------------
-
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## logs:
 
 First set up Journal to keep some persistant logs:  sudo mkdir -p /var/log/journal
@@ -1261,8 +1260,7 @@ logwatch –mailto [email protected] –range All
 
 sudo find /var/log/ -type f \( -name “*.log” \) -exec tail -f “$file” {} + | more
 
---------------------------------------------------------------------------------------------------------------------------------------------------------
-
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Block all wireless devices (bluetooth wifi) with Rfkill at boot ~
 
 sudo touch /opt/rfkill.sh && sudoedit /opt/rfkill.sh
@@ -1305,7 +1303,7 @@ Close it with Ctrl+x Press Y then Press Enter then type:
 sudo systemctl enable rfkill
 
 That’s it. Just reboot and check it ran by typing into Terminal: systemctl status rfkill 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Change mac address at every boot service  https://theprivacyguide1.github.io/linux_hardening_guide#mac_address
 
 sudo apt install macchanger 
@@ -1340,7 +1338,7 @@ Replace eth0 with your network interface. You can find the mac address with "ip 
 Then activate it: sudo systemctl enable mac
 
 Macchanger prompts upon install to automatically change Mac (select No) this methid works better ...
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Browser Tips 
 
 if you added firejail sandbox and then ran in terminal: sudo firecfg   then skip the following:
@@ -1377,7 +1375,7 @@ enable: Throttle non-visible cross-origin iframes
 enable: CSP policy for Web Payment API
 
 There are many more options may have to tinker around until you get it how you like it :) 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## If not using rfkill to block all wireless or want to use another way of blocking wireless drivers then type as root:
 
 sudo su
@@ -1387,7 +1385,7 @@ for i in $(find /lib/modules/`uname -r`/kernel/drivers/net/wireless -name "*.ko"
 
 That searches for wireless kernel drivers then adds them to a newly created blacklist in /etc/modprobe.d  Be sure to run command every kernel update as they can add new wireless drivers and or update existing 
 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Secure postfix
 
 first check for errors: sudo postconf 1> /dev/null
@@ -1421,7 +1419,70 @@ Verify postfix is not accepting connections from the outside by using another ho
 telnet <remote_host> 25
 
 for more settings see: https://linux-audit.com/postfix-hardening-guide-for-security-and-privacy/ & https://bookofzeus.com/harden-ubuntu/software/secure-postfix/
---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+## Secure configuration files or other files you'd not want changed using the "chattr" command. Chatter can make files Immutable in other words they can't be written to, can't be deleted or renamed, and no hard links can be created from them. Only symbolic links maybe created to them.
+
+Example preventing new users: sudo chattr -V +i /etc/passwd
+
+May want to do shadow gshadow sudoers there are many possibilities .profile .bashrc to name a few 
+
+To remove the immutable attribute, you use the -i option and the -V option prints info for you to see the changes or else you wouldn't see anything at all 
+-------------------------------------------------------------------------------------------------------------------------------------------------
+## Check to see what mitigations are enabled and what's not being mitigated: 
+
+grep -H '' /sys/devices/system/cpu/vulnerabilities/*
+-------------------------------------------------------------------------------------------------------------------------------------------------
+## Finding files with World Permissions:
+
+find / -perm -o=w ! -type l -ls
+
+fix with: sudo chmod o-w filePath or dirPath
+
+
+# make sure all world writable directories have sticly bit set :
+
+find PART -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print
+
+(if found then add the sticky bit): chmod +t /dir
+
+
+# Find logs that are world readable
+
+find /var/log -perm -o=r ! -type l
+
+fix readable files in /var/log: sudo chmod -R 640 /var/log/
+
+
+# Find Unauthorized World-Writable Files
+
+find / -xdev -type f -perm -0002 -print 
+
+find / -path /proc -prune -o -perm -2 ! -type l -ls
+
+if found fix by: chmod o-w filePath
+
+
+# Find Unauthorized SUID/SGID System Executables
+
+sudo find / -perm -2000 -ls   <---group
+
+sudo find / -perm -4000 -ls   <---user
+
+If found fix with: sudo chmod -s filePath
+
+
+# Find and repair any Unowned (orphan) files
+
+sudo find / -nouser -o -nogroup -ls
+
+sudo find / -path /proc -prune -o -nouser -o -nogroup
+
+
+# Verify that All World-Writable Directories Have Proper Ownership
+
+find PART -xdev -type d -perm -0002 -uid +500 -print
+-------------------------------------------------------------------------------------------------------------------------------------------------
 ## Software everyone has their own favorite but if you do not:
 
 Email: Tutanota Email it's secure encrypted open source and has a free version with a hell of a good calendar that's not overly complicated - https://tutanota.com/
@@ -1435,7 +1496,7 @@ Cloud Storage (backup): Filen: located here: https://filen.io/ It's secure (clie
 Cleaner: stick with Stacer as it doesn't delete things that could cause issues like some others do
 
 Password Manager: Bitwarden why because it's secure, free and open source store secure notes, passwords. credit cards ... 
---------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
