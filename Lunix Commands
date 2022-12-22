@@ -809,8 +809,14 @@ Option                           Description
 -f                        Exits if the group already exists
 
 to remove a group type: sudo groupdel sales
+---------------------------------------------------------------------------------------------------------
+# sudo Command-Line Options:
 
+Option                                    Description
 
-
-
+-l                          Prints a list out the allowed (and forbidden) commands for the current user                             on the current host
+-L                          Lists any default options set in the sudoers file
+-b                          Runs the given command in the background
+-u user                     Runs the specified command as a user other than root
+------------------------------------------------------------------------------------------------------------
 
