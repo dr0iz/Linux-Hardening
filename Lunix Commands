@@ -748,9 +748,12 @@ any others just use grep Example: journalctl | grep Warning
 
 journalctl | grep info
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
+# Secure configuration files or other files you'd not want changed using the "chattr" command. Chatter can make files Immutable in other words they can't be written to, can't be deleted or renamed, and no hard links can be created from them. Only symbolic links maybe created to them.
 
+Example preventing new users: sudo chattr -V +i /etc/passwd 
 
-
+To remove the immutable attribute, you use the -i option and the -V option prints info for you to see the changes or else you wouldn't see anything at all 
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
