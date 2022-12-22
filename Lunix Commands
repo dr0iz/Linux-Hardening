@@ -772,3 +772,45 @@ ro              File system will be mounted read-only.
 rw              File system will be mounted read-write.
 defaults        Sets this file system’s options as rw, suid, dev, exec, auto, nouser, and async.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
+## Users and Groups
+
+to add a user : sudo useradd -s /bin/bash -m -g sudo -G adm,systemd-journal bob 
+
+or use adduser: sudo adduser bob sudo
+
+add existing user to another group type: sudo usermod -a -G bob sudo
+
+Option                                Description
+-c comment                    The new user’s password file comment field.
+-d homedir                    The user’s home directory.
+-g initial group              The group name or number of the user’s initial login group.
+-G group1,group2              A list of additional groups of which the user is to be a member.
+-m                            Create the user’s home directory if it does not exist.
+-M                            Do not create the user’s home directory.
+-n                            Linux usually creates a group with the same name as the user automatically
+                              when the user is created. This option disables that behavior.
+-r                            You can create a system account (with a UID in the range of system
+                              accounts).
+-p password                   Specifies the user’s password.
+-s shell                      Specifies the shell the user will use.
+-e date                       Specifies the default expiry date
+-f days                       Specifies the number of days after a password has expired before
+                              the account will be disabled
+-b path/to/default/home       Specifies the initial path prefix of a new user’s home directory             
+
+
+# Adding Groups
+
+add a new group: sudo groupadd sales
+
+Option                           Description
+-g GID                    Set the GID for the group. This must be a unique number.
+-r                        Creates a system group (with a GID inside the system GID range).
+-f                        Exits if the group already exists
+
+to remove a group type: sudo groupdel sales
+
+
+
+
+
