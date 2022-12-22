@@ -65,7 +65,7 @@ sudoedit /etc/fstab
 # <file system> <mount point>   <type>  <options>       <dump>  <pass>
 /dev/mapper/tuta--vg-root /               ext4    noatime,nosuid,errors=remount-ro 0       1
 # /boot was on /dev/nvme0n1p2 during installation
-UUID=31fc417f-98e9-4dca-9328-281e7b9b2b1a /boot           ext2    ro,noatime,nodev,nosuid,noexec 0       2   <-----read only boot
+UUID=31fc417f-98e9-4dca-9328-281e7b9b2b1a /boot           ext2    ro,noatime,nodev 0       2   <-----read only boot
 # /boot/efi was on /dev/nvme0n1p1 during installation
 UUID=AB9C-A988  /boot/efi       vfat    umask=0077      0       1
 /dev/mapper/tuta--vg-home /home           ext4    rw,noatime,nodev,nosuid	0       2
