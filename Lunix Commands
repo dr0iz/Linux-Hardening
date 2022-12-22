@@ -754,6 +754,21 @@ Example preventing new users: sudo chattr -V +i /etc/passwd
 
 To remove the immutable attribute, you use the -i option and the -V option prints info for you to see the changes or else you wouldn't see anything at all 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
+## fstab Mount Options
 
-
-
+Option                  Description
+auto            File system will be mounted automatically at boot time.
+noauto          File system will not be mounted automatically at boot time.
+dev             Allows interpretation of block or character special devices on this file system.
+nodev           Does not interpret block or character special devices on this file system.
+exec            Execution of binaries is allowed on this file system.
+noexec          Execution of binaries is NOT allowed on this file system.
+suid            setuid bits are allowed to take effect on this file system.
+nosuid          setuid bits are not allowed to take effect on this file system.
+user            Normal users can mount this device.
+nouser          Only root users can mount this device.
+owner           Allows the owner of the device to mount the file system.
+ro              File system will be mounted read-only.
+rw              File system will be mounted read-write.
+defaults        Sets this file system’s options as rw, suid, dev, exec, auto, nouser, and async.
+---------------------------------------------------------------------------------------------------------------------------------------------------------
