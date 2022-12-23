@@ -819,4 +819,21 @@ Option                                    Description
 -b                          Runs the given command in the background
 -u user                     Runs the specified command as a user other than root
 ------------------------------------------------------------------------------------------------------------
+# Combining commands
+
+To invoke several commands in sequence on a single command
+line, separate them with semicolons:
+
+$ command1 ; command2 ; command3
+
+To run a sequence of commands but stop execution
+if any of them fails, separate them with && (“and”) symbols:
+
+$ command1 && command2 && command3
+
+To run a sequence of commands, stopping execution as soon
+as one succeeds, separate them with || (“or”) symbols:
+
+$ command1 || command2 || command3
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 
