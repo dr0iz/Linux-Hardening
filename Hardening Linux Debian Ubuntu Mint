@@ -49,7 +49,29 @@ sudo mount -o remount,ro /usr        <-----back to read only mode
 
 You could have DPkg try and mount it back to read only automatically after installing software and or updates but it's buggy best just do the command yourself in terminal. 
 
+
+
+To make it even easier create an short alias to cut down on the typing: sudo touch .bash_aliases 
+
+Now edit it: sudoedit .bash_aliases 
+
+add to the file something like:
+
+alias mountrw='sudo mount -o remount,rw /boot /usr'
+
+alias mountro='sudo mount -o remount,ro /usr /boot'
+
+Give it the right permissions & owner : sudo chmod 644 .bash_aliases 
+
+sudo chown yourUserName:yourUserName .bash_aliases
+
+Now all you have to type to make it read only is: mountro or to mount read write just type: mountrw
+
+
+
+
 *Information:
+
 noexec – Prevents execution of binaries on mounted file systems. This prevents remote users from executing unwanted binaries on your system.
 
 nosuid – Disables set-user-identifier or set-group-identifier bits. This prevents remote users from gaining higher privileges by running a setuid program.
