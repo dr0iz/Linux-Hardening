@@ -53,13 +53,13 @@ You could have DPkg try and mount it back to read only automatically after insta
 
 To make it even easier create an short alias to cut down on the typing: sudo touch .bash_aliases 
 
-Now edit it: sudoedit .bash_aliases 
+Now edit it: sudo nano .bash_aliases 
 
 add to the file something like:
 
-alias mountrw='sudo mount -o remount,rw /boot /usr'
+alias mountrw='sudo mount -o remount,rw /usr'
 
-alias mountro='sudo mount -o remount,ro /usr /boot'
+alias mountro='sudo mount -o remount,ro /usr'
 
 Give it the right permissions & owner : sudo chmod 644 .bash_aliases 
 
