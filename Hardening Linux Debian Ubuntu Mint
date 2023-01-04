@@ -1517,7 +1517,18 @@ sudo find / -path /proc -prune -o -nouser -o -nogroup
 # Verify that All World-Writable Directories Have Proper Ownership
 
 find PART -xdev -type d -perm -0002 -uid +500 -print
--------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+## Use chattr command for further hardening 
+
+lockdown passwd, shadow and services file to prevent new users and services: sudo chattr +i -V /etc/passwd 
+
+sudo chattr +i -V /etc/shadow
+
+sudo chattr +i -V /etc/gshadow
+
+sudo chattr +i -V /etc/services
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
 ## Software everyone has their own favorite but if you do not:
 
 Email: Tutanota Email it's secure encrypted open source and has a free version with a hell of a good calendar that's not overly complicated - https://tutanota.com/
