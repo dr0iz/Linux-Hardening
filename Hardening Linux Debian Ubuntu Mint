@@ -641,7 +641,7 @@ hmod 755 /usr/bin/gcc
 hmod 755 /usr/bin/*c++
 hmod 755 /usr/bin/*g++
 -------------------------------------------------------------------------------------------------------------------------------------------------
-## block ceratin modules - antique networking protocols and file types from being installed and or used 
+## prevent some modules from being used - antique networking protocols and file types from being installed and or used 
 
 sudo touch /etc/modprobe.d/blacklist.conf
 
@@ -1310,7 +1310,7 @@ exit 0
 
 Then close using Ctrl+x Press Y then Press Enter
 
-Lets make it executable: chmod +x /opt/rfkill.sh
+Lets make it executable: sudo chmod +x /opt/rfkill.sh
 
 Now we’ll create a Service that will execute it as root:
 
@@ -1329,7 +1329,6 @@ Wants=network-online.target
 [Service]
 ExecStart=/opt/rfkill.sh
 Type=oneshot
-
 [Install]
 WantedBy=multi-user.target
 
@@ -1456,14 +1455,6 @@ telnet <remote_host> 25
 for more settings see: https://linux-audit.com/postfix-hardening-guide-for-security-and-privacy/ & https://bookofzeus.com/harden-ubuntu/software/secure-postfix/
 
 -------------------------------------------------------------------------------------------------------------------------------------------------
-## Secure configuration files or other files you'd not want changed using the "chattr" command. Chatter can make files Immutable in other words they can't be written to, can't be deleted or renamed, and no hard links can be created from them. Only symbolic links maybe created to them.
-
-Example preventing new users: sudo chattr -V +i /etc/passwd
-
-May want to do shadow gshadow sudoers there are many possibilities .profile .bashrc to name a few 
-
-To remove the immutable attribute, you use the -i option and the -V option prints info for you to see the changes or else you wouldn't see anything at all 
--------------------------------------------------------------------------------------------------------------------------------------------------
 ## Check to see what mitigations are enabled and what's not being mitigated: 
 
 grep -H '' /sys/devices/system/cpu/vulnerabilities/*
@@ -1520,7 +1511,9 @@ find PART -xdev -type d -perm -0002 -uid +500 -print
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Use chattr command for further hardening 
 
-lockdown passwd, shadow and services file to prevent new users and services: sudo chattr +i -V /etc/passwd 
+lockdown passwd, shadow and services file to prevent new users and services:
+
+sudo chattr +i -V /etc/passwd 
 
 sudo chattr +i -V /etc/shadow
 
@@ -1528,7 +1521,6 @@ sudo chattr +i -V /etc/gshadow
 
 sudo chattr +i -V /etc/services
 --------------------------------------------------------------------------------------------------------------------------------------------------------
-
 ## Software everyone has their own favorite but if you do not:
 
 Email: Tutanota Email it's secure encrypted open source and has a free version with a hell of a good calendar that's not overly complicated - https://tutanota.com/
