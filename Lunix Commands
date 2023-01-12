@@ -409,6 +409,60 @@ usermod -s /usr/sbin/nologin "username"       (without quotes)
 kill PID
 killall -9 program_name
 
+# Preview all files in the current directory: head * | less 
+
+Display percentage of file viewed thus far: less -m
+
+Display line numbers: less -N
+
+Clear screen before displaying next page avoids scrolling: less -c
+
+
+# The tail command prints the last 10 lines of a file, and does other
+tricks:
+
+The super-useful -f option causes tail to watch a file actively while
+another program is writing to it, displaying new lines as they are
+written to the file like: tail -f /var/log/messages  now users use mainly journal and it can do the samething as tail -f just type: journalctl -f
+
+Print the last 20 lines instead of the default 10:   tail -n 20
+
+
+# Create a file: 
+
+touch newfile
+
+echo -n > newfile
+
+
+# File Properties:
+
+stat          Display attributes of files and directories.
+
+wc            Count bytes, words, lines in a file.
+
+du            Measure disk usage of files and directories.
+
+file          Identify (guess) the type of a file.
+
+touch         Change timestamps of files and directories
+
+chown         Change owner of files and directories.
+
+chgrp         Change group ownership of files and directories.
+
+chmod         Change protection mode of files and directories.
+
+umask         Set a default mode for new files and directories.
+
+chattr        Change extended attributes of files and directories.
+
+lsattr        List extended attributes of files and directories.
+
+
+
+# Various Commands:
+
 https://www.jaiminton.com/cheatsheet/DFIR/#linux-cheat-sheet
 
 date:
